@@ -1,8 +1,3 @@
-De acuerdo, voy a analizar los archivos de tu proyecto y generar los cuatro documentos Markdown solicitados: `backend.md`, `frontend.md`, `README.md` e `instrucciones.md`.
-
-A continuación, te mostraré el contenido que generaré para cada uno de estos archivos.
-
-```markdown:README.md
 # **📌 Documentación Completa del Proyecto WebApp de Validación de DAGs de Airflow**
 
 ## **🔹 Introducción**
@@ -347,9 +342,9 @@ El frontend utiliza Tailwind CSS para los estilos. Tailwind CSS es un framework 
 ## **📌 Conclusión**
 
 Esta documentación proporciona una visión completa de la WebApp de Validación de DAGs de Airflow. Describe la arquitectura, funcionalidad, configuración y uso de la aplicación, así como la estructura de archivos y el flujo de validación. Esta información es esencial para el mantenimiento, la mejora y la expansión de la aplicación en el futuro.
-```
 
-```markdown:backend/documentation-backend.md
+
+
 # **📌 Documentación Técnica y Funcional del Backend**
 
 ## **🔹 Introducción**
@@ -538,9 +533,9 @@ Esta estructura de respuesta permite al frontend mostrar mensajes de error detal
 El backend proporciona una API eficiente para validar DAGs sin ejecutar Airflow, mejorando el flujo de trabajo y evitando errores antes de subirlos al servidor.
 
 ---
-```
 
-```markdown:frontend/documentacion-frontend.md
+
+
 # **📌 Documentación Técnica y Funcional del Frontend**
 
 ## **🔹 Introducción**
@@ -803,7 +798,7 @@ Implementado con `react-hot-toast`:
 ```javascript
 ```
 
-```markdown:INSTRUCCIONES.md
+
 # **📌 Guía de Instalación y Uso de la WebApp de Validación de DAGs de Airflow**
 
 ## **🔹 Introducción**
@@ -986,7 +981,4 @@ Antes de comenzar, asegúrate de tener los siguientes requisitos:
 ## **📌 Conclusión**
 
 Esta guía proporciona una visión completa de cómo instalar, configurar y utilizar la WebApp de Validación de DAGs de Airflow. Siguiendo estos pasos, podrás validar tus DAGs de Airflow de forma rápida y sencilla.
-```
-
-He generado los contenidos para los archivos `README.md`, `backend/documentation-backend.md`, `frontend/documentacion-frontend.md` e `INSTRUCCIONES.md`. ¿Deseas que cree estos archivos en tu sistema de archivos?
 
