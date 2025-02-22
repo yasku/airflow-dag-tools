@@ -1,0 +1,195 @@
+---
+description: 
+globs: 
+---
+# **📌 Documentación Técnica y Funcional del Backend**
+
+## **🔹 Introducción**
+Este documento detalla el funcionamiento del backend desarrollado en **FastAPI** para la validación de **DAGs de Airflow 2.5**.
+El backend permite cargar, validar y analizar DAGs sin ejecutar el servicio de Airflow, utilizando funciones como **DagBag** y el **parser de Airflow**.
+
+---
+
+## **📌 Funcionalidad del Backend**
+
+El backend tiene dos funciones principales:
+1. **Validación de sintaxis Python**: Verifica si el DAG contiene errores de sintaxis utilizando `ast`.
+2. **Validación con Airflow**: Usa `DagBag` para verificar si el DAG es estructuralmente correcto y puede ser ejecutado en Airflow.
+
+Toda la comunicación se realiza a través de una **API REST**, que recibe archivos DAG en formato `.py`, los valida y devuelve una respuesta estructurada en JSON.
+
+---
+
+## **📌 Instalación y Configuración**
+### **1️⃣ Requisitos Previos**
+- **WSL2 Ubuntu 22.04** (Si estás en Windows).
+- **Python 3.9+**.
+- **Pip** y **Virtualenv**.
+- **FastAPI y Uvicorn** para el servidor web.
+- **Apache Airflow 2.5** (pero sin ejecutar el servicio).
+
+### **2️⃣ Instalación del Backend**
+Ejecuta los siguientes comandos:
+```bash
+cd backend
+python3 -m venv venv  # Crear entorno virtual
+source venv/bin/activate  # Activar entorno virtual
+pip install -r requirements.txt  # Instalar dependencias
+```
+
+### **3️⃣ Iniciar el Backend**
+Ejecuta:
+```bash
+uvicorn main:app --reload
+```
+Esto iniciará el backend en `http://127.0.0.1:8000`.
+
+### **4️⃣ Configuración de CORS**
+El backend está configurado para permitir peticiones desde el frontend mediante CORS (Cross-Origin Resource Sharing):
+
+```python
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+Esta configuración permite:
+- Peticiones desde el frontend (puerto 5173)
+- Todos los métodos HTTP
+- Todas las cabeceras HTTP
+- Credenciales en las peticiones
+
+---
+
+## **📌 Estructura del Proyecto**
+```
+/backend
+ ├── main.py               # Punto de entrada de la API
+ ├── dag_validator.py      # Módulo de validación de DAGs
+ ├── requirements.txt      # Dependencias del proyecto
+ ├── /dags                 # Carpeta donde se guardan los DAGs subidos
+ ├── /tests                # (Opcional) Pruebas unitarias
+```
+
+---
+
+## **📌 Explicación de los Archivos**
+
+### **📂 `main.py` (Punto de entrada de FastAPI)**
+**Funcionalidad:**
+- Configura CORS para permitir peticiones desde el frontend
+- Recibe archivos DAG `.py` desde el frontend
+- Guarda los archivos en la carpeta `/dags`
+- Llama a `dag_validator.py` para analizar y validar el DAG
+- Devuelve el resultado en formato JSON
+
+**Endpoints:**
+```python
+@app.get("/")
+@app.post("/validate_dag/")  # Recibe el DAG y lo valida
+```
+
+---
+
+### **📂 `dag_validator.py` (Validación de DAGs)**
+**Funcionalidad:**
+- Verifica si el código tiene errores de sintaxis con `ast`.
+- Usa `DagBag` para validar la estructura del DAG en Airflow.
+- Extrae errores y los formatea para una mejor comprensión.
+
+**Funciones principales:**
+```python
+def validate_python_syntax(file_path):  # Valida sintaxis Python
+def validate_dag(file_path):  # Valida estructura Airflow
+```
+
+---
+
+## **📌 Uso de la API**
+### **1️⃣ Probar en el Navegador**
+Abrir `http://127.0.0.1:8000/docs` para probar la API con Swagger UI.
+
+### **2️⃣ Subir un DAG y Validarlo**
+Ejemplo de petición con **`curl`**:
+```bash
+curl -X 'POST' 'http://127.0.0.1:8000/validate_dag/' \
+ -F 'file=@simple_dag.py'
+```
+
+Ejemplo de respuesta si el DAG es válido:
+```json
+{
+  "valid": true,
+  "message": "El DAG es válido."
+}
+```
+
+Ejemplo de respuesta si hay errores:
+```json
+{
+  "valid": false,
+  "error": {
+    "type": "SyntaxError",
+    "line": 5,
+    "message": "invalid syntax",
+    "file": "invalid_dag.py"
+  }
+}
+```
+
+### **📌 Formato de Respuestas**
+
+El backend proporciona respuestas estructuradas en JSON con los siguientes formatos:
+
+**1. Validación Exitosa:**
+```json
+{
+  "valid": true,
+  "message": "El DAG es válido."
+}
+```
+
+**2. Error de Sintaxis Python:**
+```json
+{
+  "valid": false,
+  "error": {
+    "type": "SyntaxError",
+    "line": 5,
+    "message": "invalid syntax",
+    "file": "invalid_dag.py"
+  }
+}
+```
+
+**3. Error de Validación Airflow:**
+```json
+{
+  "valid": false,
+  "error": {
+    "type": "Airflow DAG ImportError",
+    "details": [
+      {
+        "message": "Descripción del error",
+        "file": "nombre_del_dag.py"
+      }
+    ]
+  }
+}
+```
+
+Esta estructura de respuesta permite al frontend mostrar mensajes de error detallados y útiles para el usuario.
+
+---
+
+## **📌 Conclusión**
+El backend proporciona una API eficiente para validar DAGs sin ejecutar Airflow, mejorando el flujo de trabajo y evitando errores antes de subirlos al servidor.
+
+---
+
+
+

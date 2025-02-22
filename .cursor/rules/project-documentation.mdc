@@ -1,0 +1,347 @@
+---
+description: 
+globs: 
+---
+
+# **📌 Documentación Completa del Proyecto WebApp de Validación de DAGs de Airflow**
+
+## **🔹 Introducción**
+
+Esta documentación detalla la arquitectura, funcionalidad y configuración de la WebApp de Validación de DAGs de Airflow. La aplicación permite a los usuarios cargar y validar DAGs de Airflow sin necesidad de ejecutar el servicio de Airflow, utilizando funciones como `DagBag` y el parser de Airflow.
+
+La aplicación se compone de dos partes principales:
+
+*   **Backend:** Desarrollado con FastAPI, se encarga de recibir los archivos DAG, validarlos y retornar los resultados en formato JSON.
+*   **Frontend:** Construido con Vite, React y Tailwind CSS, proporciona una interfaz de usuario para subir los DAGs y visualizar los resultados de la validación.
+
+---
+
+## **📌 Arquitectura del Proyecto**
+
+La arquitectura del proyecto sigue un patrón cliente-servidor, donde el frontend actúa como cliente y el backend como servidor. La comunicación entre ambos se realiza a través de una API REST.
+
+```
+/webapp
+ ├── /backend
+ │   ├── main.py               # Punto de entrada del backend (FastAPI)
+ │   ├── dag_validator.py      # Lógica para validar DAGs
+ │   ├── requirements.txt      # Dependencias
+ │   ├── documentacion-backend.md # Documentación del backend
+ │   ├── /tests                # Pruebas del backend
+ │   ├── /dags                 # Carpeta donde se guardarán los DAGs subidos
+ ├── /frontend
+ │   ├── /src
+ │   │   ├── App.jsx           # Componente principal
+ │   │   ├── App.css           # Estilos globales
+ │   │   ├── main.jsx          # Punto de entrada de React
+ │   │   ├── index.css         # Estilos globales
+ │   │   ├── /pages            # Páginas principales
+ │   │   │   ├── Home.jsx      # Página de inicio
+ │   │   │   ├── Upload.jsx    # Página para cargar DAGs
+ │   │   │   ├── Validate.jsx  # Página de validación
+ │   │   ├── /components       # Componentes reutilizables
+ │   │   │   ├── Navbar.jsx    # Barra de navegación
+ │   ├── package.json          # Dependencias de React
+ │   ├── tailwind.config.js    # Configuración de Tailwind
+ │   ├── postcss.config.js    # Configuración de PostCSS
+ │   ├── index.html          # Página principal
+ │   ├── vite.config.js        # Configuración de Vite
+ ├── /docs
+ │   ├── INSTRUCCIONES.md      # Guía de instalación y uso
+ │   ├── CHANGELOG.md          # Registro de cambios
+ ├── Etapas de Desarrollo.md   # Etapas de desarrollo del proyecto
+ ├── Estructura del Proyecto.md   # Estructura del proyecto
+```
+
+---
+
+## **📌 Backend (FastAPI)**
+
+### **⚙️ Funcionalidad**
+
+El backend, desarrollado con FastAPI, tiene las siguientes funciones principales:
+
+1.  **Recibir archivos DAG:** A través de un endpoint (`/validate_dag/`), el backend recibe archivos DAG en formato `.py` desde el frontend.
+2.  **Guardar archivos DAG:** Los archivos recibidos se guardan temporalmente en la carpeta `/dags`.
+3.  **Validar DAGs:** Utiliza el módulo `dag_validator.py` para validar la sintaxis y estructura del DAG.
+4.  **Retornar resultados:** Devuelve una respuesta estructurada en JSON, indicando si el DAG es válido o, en caso contrario, los errores encontrados.
+
+### **🛠️ Instalación y Configuración**
+
+1.  **Requisitos Previos:**
+    *   WSL2 Ubuntu 22.04 (si estás en Windows).
+    *   Python 3.9+.
+    *   Pip y Virtualenv.
+    *   FastAPI y Uvicorn.
+    *   Apache Airflow 2.5 (sin ejecutar el servicio).
+2.  **Instalación:**
+
+    ```bash
+    cd backend
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    ```
+3.  **Iniciar el Backend:**
+
+    ```bash
+    uvicorn main:app --reload
+    ```
+
+    Esto iniciará el backend en `http://127.0.0.1:8000`.
+
+### **📂 Estructura de Archivos**
+
+*   **`main.py` (startLine: 48, endLine: 49):** Punto de entrada de la API FastAPI. Define las rutas y gestiona la recepción y validación de DAGs.
+*   **`dag_validator.py` (startLine: 54, endLine: 55):** Módulo que contiene la lógica para validar los DAGs, incluyendo la verificación de sintaxis con `ast` y la validación de la estructura con `DagBag`.
+*   **`requirements.txt` (startLine: 54, endLine: 55):** Lista de dependencias necesarias para ejecutar el backend.
+*   **`/dags` (startLine: 56, endLine: 57):** Carpeta donde se guardan los DAGs subidos para su validación.
+*   **`/tests` (startLine: 56, endLine: 57):** (Opcional) Carpeta para pruebas unitarias del backend.
+
+### **🔑 Explicación de los Archivos Clave**
+
+#### **`main.py`**
+
+Este archivo es el punto de entrada de la API FastAPI. Define las rutas y gestiona la recepción y validación de DAGs.
+
+*   **Funcionalidad:**
+    *   Recibe archivos DAG `.py` desde el frontend.
+    *   Guarda los archivos en la carpeta `/dags`.
+    *   Llama a `dag_validator.py` para analizar y validar el DAG.
+    *   Devuelve el resultado en formato JSON.
+*   **Endpoints:**
+
+    *   `@app.get("/")`
+    *   `@app.post("/validate_dag/")` (startLine: 68, endLine: 70)
+
+#### **`dag_validator.py`**
+
+Este módulo contiene la lógica para validar los DAGs.
+
+*   **Funcionalidad:**
+    *   Verifica si el código tiene errores de sintaxis con `ast`.
+    *   Usa `DagBag` para validar la estructura del DAG en Airflow.
+    *   Extrae errores y los formatea para una mejor comprensión.
+*   **Funciones principales:**
+
+    *   `validate_python_syntax(file_path)` (startLine: 82, endLine: 83): Valida la sintaxis de Python.
+    *   `validate_dag(file_path)` (startLine: 83, endLine: 84): Valida la estructura del DAG en Airflow.
+
+### **💻 Uso de la API**
+
+1.  **Probar en el Navegador:**
+
+    Abrir `http://127.0.0.1:8000/docs` para probar la API con Swagger UI.
+2.  **Subir un DAG y Validarlo:**
+
+    Ejemplo de petición con `curl`:
+
+    ```bash
+    curl -X 'POST' 'http://127.0.0.1:8000/validate_dag/' \
+     -F 'file=@simple_dag.py'
+    ```
+
+    Ejemplo de respuesta si el DAG es válido:
+
+    ```json
+    {
+      "valid": true,
+      "message": "El DAG es válido."
+    }
+    ```
+
+    Ejemplo de respuesta si hay errores:
+
+    ```json
+    {
+      "valid": false,
+      "error": {
+        "type": "SyntaxError",
+        "line": 5,
+        "message": "invalid syntax",
+        "file": "invalid_dag.py"
+      }
+    }
+    ```
+
+### **📄 Ejemplo de `main.py`**
+
+```python:backend/main.py
+startLine: 1
+endLine: 39
+```
+
+### **📄 Ejemplo de `dag_validator.py`**
+
+```python:backend/dag_validator.py
+startLine: 1
+endLine: 28
+```
+
+---
+
+## **📌 Frontend (Vite + React + Tailwind CSS)**
+
+### **⚙️ Funcionalidad**
+
+El frontend, construido con Vite, React y Tailwind CSS, proporciona una interfaz de usuario para:
+
+1.  **Subir archivos DAG:** Permite a los usuarios seleccionar y subir archivos DAG en formato `.py`.
+2.  **Mostrar contenido del DAG:** Muestra el contenido del archivo DAG subido en la pantalla.
+3.  **Enviar DAG al backend:** Envía el archivo DAG al backend para su validación.
+4.  **Mostrar resultados de validación:** Muestra el resultado de la validación, incluyendo errores detallados si el DAG es inválido.
+
+### **🛠️ Instalación y Configuración**
+
+1.  **Requisitos Previos:**
+    *   Node.js versión 18 o superior.
+    *   npm o yarn instalado.
+    *   Backend en ejecución (`uvicorn main:app --reload`).
+2.  **Instalación:**
+
+    ```bash
+    cd frontend
+    npm install
+    ```
+3.  **Iniciar el Frontend:**
+
+    ```bash
+    npm run dev
+    ```
+
+    Esto iniciará el frontend en `http://localhost:5173`.
+
+### **📂 Estructura de Archivos**
+
+*   **`App.jsx` (startLine: 35, endLine: 36):** Componente principal de la aplicación. Define las rutas y la estructura general.
+*   **`main.jsx` (startLine: 41, endLine: 42):** Punto de entrada de React.
+*   **`index.css` (startLine: 41, endLine: 42):** Estilos globales de Tailwind CSS.
+*   **`App.css` (startLine: 43, endLine: 44):** Estilos específicos de la aplicación.
+*   **`/pages` (startLine: 44, endLine: 45):**
+    *   `Home.jsx` (startLine: 45, endLine: 46): Página de inicio.
+    *   `Upload.jsx` (startLine: 46, endLine: 47): Página para subir DAGs.
+    *   `Validate.jsx` (startLine: 47, endLine: 48): Página para mostrar los resultados de la validación.
+*   **`/components` (startLine: 48, endLine: 49):**
+    *   `Navbar.jsx` (startLine: 49, endLine: 50): Barra de navegación.
+*   **`package.json` (startLine: 50, endLine: 51):** Dependencias de React.
+*   **`tailwind.config.js` (startLine: 51, endLine: 52):** Configuración de Tailwind CSS.
+*   **`postcss.config.cjs` (startLine: 52, endLine: 53):** Configuración de PostCSS.
+*   **`index.html` (startLine: 53, endLine: 54):** Página principal HTML.
+*   **`vite.config.js` (startLine: 54, endLine: 55):** Configuración de Vite.
+
+### **🔑 Explicación de los Archivos Clave**
+
+#### **`App.jsx`**
+
+Este archivo es el componente principal de la aplicación.
+
+*   **Funcionalidad:**
+    *   Define las rutas principales con `react-router-dom`.
+    *   Incluye el `Navbar` y las páginas de la app.
+
+```javascript:frontend/src/App.jsx
+startLine: 1
+endLine: 24
+```
+
+#### **`Navbar.jsx`**
+
+Este archivo define la barra de navegación.
+
+*   **Funcionalidad:**
+    *   Barra de navegación con enlaces a las secciones principales.
+
+```javascript:frontend/src/App.jsx
+startLine: 1
+endLine: 7
+```
+
+#### **`Upload.jsx`**
+
+Este archivo contiene la lógica para subir archivos DAG.
+
+*   **Funcionalidad:**
+    *   Permite seleccionar un archivo DAG desde el sistema de archivos.
+    *   Muestra el contenido del archivo DAG.
+    *   Envía el archivo DAG al backend para su validación.
+
+#### **`Validate.jsx`**
+
+Este archivo muestra los resultados de la validación.
+
+*   **Funcionalidad:**
+    *   Recibe los resultados de la validación desde el backend.
+    *   Muestra un mensaje indicando si el DAG es válido o no.
+    *   Si el DAG no es válido, muestra los errores detallados.
+
+### **🎨 Estilos con Tailwind CSS**
+
+El frontend utiliza Tailwind CSS para los estilos. Tailwind CSS es un framework CSS utility-first que permite crear interfaces de usuario de forma rápida y sencilla.
+
+*   **`tailwind.config.js`:** Este archivo contiene la configuración de Tailwind CSS. Define las rutas de los archivos que se van a escanear para aplicar los estilos de Tailwind.
+
+    ```javascript
+    export default {
+      content: [
+        "./index.html",
+        "./src/**/*.{js,jsx,ts,tsx}"
+      ],
+      theme: {
+        extend: {},
+      },
+      plugins: [],
+    };
+    ```
+
+*   **`index.css`:** Este archivo importa los estilos base de Tailwind CSS.
+
+    ```css
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+    ```
+
+### **💻 Uso del Frontend**
+
+1.  **Subir un DAG y Validarlo:**
+
+    Desde la página `Upload.jsx`, se envía un archivo al backend para su validación.
+
+    ```javascript
+    const handleUpload = async () => {
+      const formData = new FormData();
+      formData.append("file", file);
+      try {
+        const response = await fetch("http://127.0.0.1:8000/validate_dag/", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await response.json();
+        console.log(result);
+      } catch (error) {
+        console.error("Error al subir el DAG:", error);
+      }
+    };
+    ```
+
+    El resultado se muestra en `Validate.jsx`.
+
+---
+
+## **📌 Flujo de Validación**
+
+1.  El usuario sube un archivo DAG a través del frontend (`Upload.jsx`).
+2.  El frontend envía el archivo al backend (`/validate_dag/`).
+3.  El backend guarda el archivo en la carpeta `/dags`.
+4.  El backend llama a la función `validate_dag` en `dag_validator.py` para validar el DAG.
+5.  `validate_dag` utiliza `validate_python_syntax` para verificar la sintaxis de Python.
+6.  `validate_dag` utiliza `DagBag` para validar la estructura del DAG en Airflow.
+7.  El backend retorna el resultado de la validación en formato JSON.
+8.  El frontend recibe el resultado y lo muestra en la página `Validate.jsx`.
+
+---
+
+## **📌 Conclusión**
+
+Esta documentación proporciona una visión completa de la WebApp de Validación de DAGs de Airflow. Describe la arquitectura, funcionalidad, configuración y uso de la aplicación, así como la estructura de archivos y el flujo de validación. Esta información es esencial para el mantenimiento, la mejora y la expansión de la aplicación en el futuro.
+```

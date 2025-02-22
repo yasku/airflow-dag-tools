@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    @apply bg-react-dark min-h-screen;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-react-darker;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-react-border/50 rounded-full hover:bg-react-border/70 transition-colors;
+  }
+}
+
+@layer components {
+  /* Layout Base */
+  .page-container {
+    @apply flex h-[calc(100vh-4rem)];
+  }
+
+  .sidebar {
+    @apply w-72 border-r border-react-border/30 p-6;
+  }
+
+  .main-content {
+    @apply flex-1;
+  }
+
+  .content-section {
+    @apply p-6;
+  }
+
+  /* Cards y Contenedores */
+  .card {
+    @apply bg-react-darker/50 rounded-lg border border-react-border/30;
+  }
+
+  .section-container {
+    @apply bg-react-darker/50 rounded-lg border border-react-border/30 p-6;
+  }
+
+  /* Encabezados */
+  .title-container {
+    @apply bg-[#2A1810] rounded-lg border border-orange-900/50 p-4 mb-8;
+  }
+
+  .section-title {
+    @apply text-2xl font-semibold text-orange-500/90 flex items-center;
+  }
+
+  .section-header {
+    @apply text-lg font-medium text-gray-200 mb-4 flex items-center;
+  }
+
+  /* Inputs y Forms */
+  .input-field {
+    @apply bg-react-dark/50 border border-react-border/30 rounded-lg px-4 py-2 text-gray-200 
+    focus:outline-none focus:ring-2 focus:ring-react-blue/50 focus:border-transparent
+    placeholder:text-gray-500;
+  }
+
+  .input-container {
+    @apply space-y-2;
+  }
+
+  /* Botones */
+  .btn-primary {
+    @apply bg-react-blue/10 text-react-blue rounded-lg px-6 py-3
+    hover:bg-react-blue/20 transition-all duration-300
+    disabled:opacity-50 disabled:cursor-not-allowed
+    flex items-center;
+  }
+
+  .btn-secondary {
+    @apply bg-react-border/10 text-gray-300 rounded-lg px-6 py-3
+    hover:bg-react-border/20 transition-all duration-300
+    disabled:opacity-50 disabled:cursor-not-allowed
+    flex items-center;
+  }
+
+  /* Tabs */
+  .tab-button {
+    @apply flex items-center px-4 py-2 rounded-lg transition-colors duration-200;
+  }
+
+  .tab-button-active {
+    @apply bg-react-blue/10 text-react-blue;
+  }
+
+  .tab-button-inactive {
+    @apply text-gray-400 hover:text-gray-200 hover:bg-react-blue/5;
+  }
+
+  /* Editor y Código */
+  .code-editor {
+    @apply bg-react-dark/50 rounded-lg overflow-hidden border border-react-border/30;
+  }
+
+  .code-container {
+    @apply bg-[#1A1D23] rounded-lg font-mono text-sm;
+  }
+
+  /* Lista de DAGs */
+  .dag-list-item {
+    @apply w-full flex items-center px-3 py-2 rounded-lg transition-colors duration-200
+    hover:bg-react-blue/5 hover:text-react-blue group;
+  }
+
+  .dag-list-item-active {
+    @apply bg-react-blue/10 text-react-blue;
+  }
+
+  /* Validación y Estados */
+  .validation-success {
+    @apply border-green-500/30 text-green-400;
+  }
+
+  .validation-error {
+    @apply border-red-500/30 text-red-400;
+  }
+
+  .input-file {
+    @apply block w-full text-sm text-gray-300
+    file:mr-4 file:py-3 file:px-6 file:rounded-lg
+    file:border-0 file:text-sm file:font-semibold
+    file:bg-indigo-600 file:text-white
+    hover:file:bg-indigo-500 cursor-pointer
+    file:transition-all file:duration-300
+    file:shadow-lg file:shadow-indigo-500/10;
+  }
+
+  .code-box {
+    @apply bg-[#0A0A0A]/90 rounded-lg p-4 font-mono text-sm
+    border border-green-500/10
+    overflow-x-auto shadow-inner backdrop-blur-sm text-gray-300
+    hover:border-green-500/20 transition-all duration-300;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500;
+  }
+
+  .glass-card {
+    @apply bg-black/40 backdrop-blur-md 
+    border border-green-500/10
+    rounded-xl shadow-xl transition-all duration-300
+    hover:border-green-500/20 
+    hover:shadow-2xl hover:shadow-green-500/10 
+    relative overflow-hidden;
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 8s linear infinite;
+  }
+
+  /* Hover Effects */
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-102;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-lg hover:shadow-react-blue/20;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+:root {
+  --react-dark: #0F172A;
+  --react-darker: #1E293B;
+  --react-border: #334155;
+  --react-blue: #3B82F6;
+}
