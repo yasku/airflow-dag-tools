@@ -16,28 +16,25 @@ function Navbar() {
               className="flex items-center group transition-all duration-300 hover:scale-105 mr-8"
             >
               <div className="flex items-center">
-                <div className="mr-3 relative">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-react-blue/50 to-purple-500/50 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
-                  <div className="relative bg-react-darker/80 rounded-lg p-2">
-                    <svg 
-                      className="h-6 w-6 text-react-blue group-hover:text-white transition-colors duration-300" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor"
-                    >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"
-                      />
-                    </svg>
-                  </div>
+                <div className="mr-3">
+                  <svg 
+                    className="h-6 w-6 text-white" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M5 12h14M12 5v14" 
+                    />
+                  </svg>
                 </div>
 
                 <div className="flex flex-col">
-                  <span className="text-xl font-bold bg-gradient-to-r from-react-blue to-purple-400 text-transparent bg-clip-text group-hover:from-white group-hover:to-react-blue transition-all duration-300">
-                    Airflow DAG Validator
+                  <span className="text-xl font-bold">
+                    <span className="text-react-blue">AirFlow</span> <span className="text-white">DAG Validator</span>
                   </span>
                   <span className="text-xs text-gray-200 transition-colors duration-300">
                     Validación y Generación de DAGs

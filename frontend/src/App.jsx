@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ConfigProvider } from './context/ConfigContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import Generator from './pages/Generator';
 import Upload from './pages/Upload';
@@ -22,9 +23,9 @@ function App() {
     <AuthProvider>
       <ConfigProvider>
         <Router>
-          <div className="min-h-screen bg-react-dark flex flex-col">
+          <div className="flex flex-col min-h-screen bg-react-dark">
             <Navbar />
-            <div className="flex-1 flex flex-col">
+            <main className="flex-grow">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/generator" element={<Generator />} />
@@ -45,7 +46,8 @@ function App() {
                 <Route path="/dag-docs-v2" element={<DagDocumentationV2 />} />
                 <Route path="/validation-v2" element={<ValidationV2 />} />
               </Routes>
-            </div>
+            </main>
+            <Footer />
             <Toaster />
           </div>
         </Router>
