@@ -92,6 +92,10 @@ with DAG(
         python_callable=example_function,
     )"""
 
+# Add to main.py constants
+TEMPLATES_DIR = "templates"
+os.makedirs(TEMPLATES_DIR, exist_ok=True)  # Create directory if it doesn't exist
+
 @app.get("/")
 def read_root():
     """
@@ -542,5 +546,80 @@ async def get_dag_diagram(dag_name: str):
             "tasks": tasks,
             "dependencies": dependencies
         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/list_templates/")
+async def list_templates():
+    """
+    Lists all available DAG templates.
+    """
+    try:
+        templates_dir = TEMPLATES_DIR
+        templates = [f.replace('.py', '') for f in os.listdir(templates_dir) if f.endswith('.py')]
+        return {"templates": templates}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/get_template/{template_name}")
+async def get_template_by_name(template_name: str):
+    """
+    Returns the content of a specific template.
+    """
+    try:
+        template_path = os.path.join(TEMPLATES_DIR, f"{template_name}.py")
+        if not os.path.exists(template_path):
+            raise HTTPException(status_code=404, detail=f"Template {template_name} not found")
+            
+        with open(template_path, "r") as file:
+            content = file.read()
+        return {"template": content}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/save_template/")
+async def save_template(template_data: dict):
+    """
+    Saves a new template.
+    """
+    try:
+        if not template_data.get("name") or not template_data.get("content"):
+            raise HTTPException(status_code=400, detail="Name and content are required")
+            
+        template_path = os.path.join(TEMPLATES_DIR, f"{template_data['name']}.py")
+        
+        # Check if template already exists
+        if os.path.exists(template_path) and not template_data.get("overwrite", False):
+            raise HTTPException(status_code=400, detail=f"Template {template_data['name']} already exists")
+            
+        # Save template
+        with open(template_path, "w") as file:
+            file.write(template_data["content"])
+            
+        return {"message": f"Template {template_data['name']} saved successfully"}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/delete_template/{template_name}")
+async def delete_template(template_name: str):
+    """
+    Deletes a template.
+    """
+    try:
+        template_path = os.path.join(TEMPLATES_DIR, f"{template_name}.py")
+        if not os.path.exists(template_path):
+            raise HTTPException(
+                status_code=404,
+                detail=f"No se encontró el template {template_name}"
+            )
+        
+        os.remove(template_path)
+        return {"message": f"Template {template_name} eliminado correctamente"}
+    except HTTPException as he:
+        raise he
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

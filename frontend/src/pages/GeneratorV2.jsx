@@ -14,10 +14,27 @@ function GeneratorV2() {
   const [isValidated, setIsValidated] = useState(false);
   const [nameError, setNameError] = useState("");
   const dagListRef = useRef(null);
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState("");
 
-  // Cargar el template como en Generator.jsx
-  useEffect(() => {
-    const defaultTemplate = `from airflow import DAG
+  // Función para cargar el template desde el backend
+  const fetchTemplate = async () => {
+    try {
+      // Fetch the template from the backend
+      const response = await fetch("http://127.0.0.1:8000/config/template/");
+      if (!response.ok) {
+        throw new Error("Error al cargar el template");
+      }
+      const data = await response.json();
+      
+      // Simply set the template code without adding cursor position marker
+      setDagCode(data.template);
+    } catch (error) {
+      console.error("Error al cargar el template:", error);
+      toast.error("Error al cargar el template del DAG");
+      
+      // Fallback to a basic template if fetch fails
+      setDagCode(`from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 
@@ -49,9 +66,55 @@ with DAG(
         python_callable=sample_task,
     )
 
-    task_1`;
+    task_1`);
+    }
+  };
+
+  // New function to fetch all templates
+  const fetchTemplates = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/list_templates/");
+      if (!response.ok) {
+        throw new Error("Error al cargar las plantillas");
+      }
+      const data = await response.json();
+      setTemplates(data.templates);
+    } catch (error) {
+      console.error("Error al cargar las plantillas:", error);
+      toast.error("Error al cargar las plantillas disponibles");
+    }
+  };
+
+  // Function to handle template selection
+  const handleTemplateSelect = async (templateName) => {
+    if (!templateName) return;
     
-    setDagCode(defaultTemplate);
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/get_template/${templateName}`);
+      if (!response.ok) {
+        throw new Error(`Error al cargar la plantilla ${templateName}`);
+      }
+      const data = await response.json();
+      
+      // Update code with selected template
+      setDagCode(data.template);
+      setSelectedTemplate(templateName);
+      
+      // Reset validation state
+      setValidationResult(null);
+      setIsValidated(false);
+      
+      toast.success(`Plantilla "${templateName}" cargada correctamente`);
+    } catch (error) {
+      console.error(`Error al cargar la plantilla ${templateName}:`, error);
+      toast.error(`Error al cargar la plantilla ${templateName}`);
+    }
+  };
+
+  // Cargar el template al iniciar el componente
+  useEffect(() => {
+    fetchTemplates();
+    fetchTemplate();
   }, []);
 
   // Funciones de Generator.jsx
@@ -226,6 +289,43 @@ with DAG(
                     {nameError && (
                       <p className="text-sm text-red-400 mt-2">{nameError}</p>
                     )}
+                  </div>
+
+                  {/* Template Selector - Add this before the code editor section */}
+                  <div className="section-container mb-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="section-header">
+                        <svg className="h-5 w-5 text-react-blue mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                        Plantilla DAG
+                      </h3>
+                      
+                      <div className="flex items-center">
+                        <select
+                          className="input-field mr-2"
+                          value={selectedTemplate}
+                          onChange={(e) => handleTemplateSelect(e.target.value)}
+                        >
+                          <option value="">Seleccionar plantilla</option>
+                          {templates.map(template => (
+                            <option key={template} value={template}>{template}</option>
+                          ))}
+                        </select>
+                        
+                        <motion.button
+                          onClick={() => fetchTemplate()}
+                          className="btn-secondary flex items-center"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          title="Cargar plantilla predeterminada"
+                        >
+                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                        </motion.button>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Editor de código */}

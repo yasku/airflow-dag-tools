@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import DocumentationEditor from '../components/admin/DocumentationEditor';
 import TemplateEditor from '../components/admin/TemplateEditor';
 import DagManager from '../components/admin/DagManager';
+import TemplateManager from '../components/admin/TemplateManager';
 
 function Admin() {
   const [activeTab, setActiveTab] = useState('documentation');
@@ -23,6 +24,15 @@ function Admin() {
       icon: (
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+        </svg>
+      )
+    },
+    {
+      id: 'templates',
+      title: 'Gestionar Templates',
+      icon: (
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
         </svg>
       )
     },
@@ -73,6 +83,7 @@ function Admin() {
               <div className="p-6">
                 {activeTab === 'documentation' && <DocumentationEditor />}
                 {activeTab === 'template' && <TemplateEditor />}
+                {activeTab === 'templates' && <TemplateManager />}
                 {activeTab === 'dags' && <DagManager />}
               </div>
             </div>
