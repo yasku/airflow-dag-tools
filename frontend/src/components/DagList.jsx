@@ -7,7 +7,7 @@ const DagList = forwardRef(({ onDagSelect }, ref) => {
 
   const fetchDags = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/list_dags/');
+      const response = await fetch('/list_dags/');
       const data = await response.json();
       setDags(data.dags);
       setLoading(false);

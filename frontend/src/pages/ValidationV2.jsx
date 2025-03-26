@@ -24,7 +24,7 @@ function ValidationV2() {
 
   const handleDagSelect = async (dagName) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/get_dag_content/${dagName}`);
+      const response = await fetch(`/get_dag_content/${dagName}`);
       const data = await response.json();
       setDagCode(data.content);
       setSelectedDagName(dagName);
@@ -52,7 +52,7 @@ function ValidationV2() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/validate_dag/", {
+      const response = await fetch("/validate_dag/", {
         method: "POST",
         body: formData,
       });

@@ -1,5 +1,8 @@
 # Descripción: Este archivo inicializa FastAPI, define las rutas principales y permite interactuar con la API.
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dag_validator import validate_dag
@@ -13,6 +16,8 @@ import base64
 from docstring_parser import parse as parse_docstring
 from pyment import PyComment
 import re
+from fastapi import Request
+from fastapi.responses import JSONResponse
 
 # Inicializar la aplicación FastAPI
 app = FastAPI()
@@ -544,3 +549,36 @@ async def get_dag_diagram(dag_name: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# Ruta al directorio de build
+FRONTEND_DIST_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"))
+ROUTE_PREFIXES_TO_IGNORE = (
+    "api/",
+    "config/",
+    "validate_dag",
+    "list_dags",
+    "get_dag_content",
+    "save_dag",
+    "delete_dag",
+    "generate_dag_doc",
+    "get_dag_diagram",
+)
+
+# Servir archivos estáticos (assets de Vite)
+app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST_PATH, "assets")), name="assets")
+
+# Servir index.html en la raíz
+@app.get("/")
+async def serve_frontend():
+    return FileResponse(os.path.join(FRONTEND_DIST_PATH, "index.html"))
+
+# (opcional) Servir rutas de SPA
+@app.get("/{full_path:path}")
+async def catch_all_routes(request: Request, full_path: str):
+    for prefix in ROUTE_PREFIXES_TO_IGNORE:
+        if full_path.startswith(prefix):
+            return JSONResponse(
+                status_code=404,
+                content={"detail": f"No se encontró la ruta: /{full_path}"}
+            )
+    return FileResponse(os.path.join(FRONTEND_DIST_PATH, "index.html"))

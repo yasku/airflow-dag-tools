@@ -13,7 +13,7 @@ function DagManager() {
 
   const fetchDags = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/list_dags/');
+      const response = await fetch('/list_dags/');
       const data = await response.json();
       setDags(data.dags);
       setLoading(false);
@@ -30,7 +30,7 @@ function DagManager() {
 
   const handleDagSelect = async (dagName) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/get_dag_content/${dagName}`);
+      const response = await fetch(`/get_dag_content/${dagName}`);
       const data = await response.json();
       setDagContent(data.content);
       setSelectedDag(dagName);
@@ -42,7 +42,7 @@ function DagManager() {
 
   const handleDeleteDag = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/delete_dag/${selectedDag}`, {
+      const response = await fetch(`/delete_dag/${selectedDag}`, {
         method: 'DELETE'
       });
       
@@ -69,7 +69,7 @@ function DagManager() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('http://127.0.0.1:8000/save_dag/', {
+      const response = await fetch('/save_dag/', {
         method: 'POST',
         body: formData
       });

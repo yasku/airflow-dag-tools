@@ -86,7 +86,7 @@ with DAG(
       // No usamos el nombre real del DAG para la validación
       formData.append("file", dagBlob, "temp_validation.py");
 
-      const response = await fetch("http://127.0.0.1:8000/validate_dag/", {
+      const response = await fetch("/validate_dag/", {
         method: "POST",
         body: formData,
       });
@@ -115,7 +115,7 @@ with DAG(
       const fileName = `${dagName}.py`;
       formData.append("file", dagBlob, fileName);
 
-      const response = await fetch("http://127.0.0.1:8000/save_dag/", {
+      const response = await fetch("/save_dag/", {
         method: "POST",
         body: formData
       });
@@ -154,7 +154,7 @@ with DAG(
 
   const handleDagSelect = async (dagName) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/get_dag_content/${dagName}`);
+      const response = await fetch(`/get_dag_content/${dagName}`);
       const data = await response.json();
       setDagCode(data.content);
       setDagName(dagName.replace('.py', ''));
