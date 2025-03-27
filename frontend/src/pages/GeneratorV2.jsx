@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import TextareaCodeEditor from "@uiw/react-textarea-code-editor";
 import "@uiw/react-textarea-code-editor/dist.css";
 import DagList from '../components/DagList';
+import DependencyManager from '../components/DependencyManager';
 
 function GeneratorV2() {
   // Estados de Generator.jsx
@@ -16,6 +17,18 @@ function GeneratorV2() {
   const dagListRef = useRef(null);
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  
+  // Estados para gestión de módulos (renombrados para mayor claridad)
+  const [useCustomModules, setUseCustomModules] = useState(true);
+  const [showModulesManager, setShowModulesManager] = useState(false);
+  
+  // Eliminamos los estados que ya no necesitamos manejar directamente en este componente
+  // ya que se gestionarán dentro del componente DependencyManager
+  // const [dependencies, setDependencies] = useState({ packages: [], modules_paths: [] });
+  // const [newPackage, setNewPackage] = useState({ name: "", version: "" });
+  // const [newModulePath, setNewModulePath] = useState("");
+  // const [loadingDependencies, setLoadingDependencies] = useState(false);
+  // const [detectedDependencies, setDetectedDependencies] = useState([]);
 
   // Función para cargar el template desde el backend
   const fetchTemplate = async () => {
@@ -111,13 +124,53 @@ with DAG(
     }
   };
 
-  // Cargar el template al iniciar el componente
+  // Eliminamos funciones relacionadas con la gestión de dependencias que ya no necesitamos
+  // fetchDependencies, handleAddPackage, handleAddModulePath, handleRemoveDependency
+  
+  // Función para analizar importaciones de módulos en el código DAG
+  const analyzeModuleImports = async () => {
+    if (!dagCode.trim()) {
+      toast.error("No hay código DAG para analizar");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      const dagBlob = new Blob([dagCode], { type: 'text/x-python' });
+      formData.append("file", dagBlob, "temp_analysis.py");
+
+      const response = await fetch("http://127.0.0.1:8000/analyze_dag_dependencies/", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.detail || "Error al analizar importaciones");
+      }
+
+      if (result.success) {
+        toast.success("Importaciones analizadas correctamente");
+      } else {
+        toast.error("Error al analizar importaciones del DAG");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Error al analizar importaciones");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Simplificamos useEffect para enfocarnos en cargar templates
   useEffect(() => {
     fetchTemplates();
     fetchTemplate();
   }, []);
 
-  // Funciones de Generator.jsx
+  // Resto de funciones existentes...
   const validateDagName = (name) => {
     if (!name.trim()) {
       setNameError("El nombre del DAG es requerido");
@@ -153,6 +206,7 @@ with DAG(
     }
   };
 
+  // Modificar la función de validación para usar módulos personalizados
   const validateDAG = async () => {
     if (!validateDagName(dagName)) {
       toast.error("Por favor, corrige el nombre del DAG");
@@ -165,7 +219,10 @@ with DAG(
       const dagBlob = new Blob([dagCode], { type: 'text/x-python' });
       formData.append("file", dagBlob, "temp_validation.py");
 
-      const response = await fetch("http://127.0.0.1:8000/validate_dag/", {
+      // URL con parámetro para usar módulos personalizados (mantenemos el nombre del parámetro para compatibilidad)
+      const url = `http://127.0.0.1:8000/validate_dag/?use_custom_dependencies=${useCustomModules}`;
+
+      const response = await fetch(url, {
         method: "POST",
         body: formData,
       });
@@ -291,7 +348,7 @@ with DAG(
                     )}
                   </div>
 
-                  {/* Template Selector - Add this before the code editor section */}
+                  {/* Template Selector */}
                   <div className="section-container mb-4">
                     <div className="flex justify-between items-center">
                       <h3 className="section-header">
@@ -328,6 +385,72 @@ with DAG(
                     </div>
                   </div>
 
+                  {/* Sección de módulos disponibles (antes "dependencias") */}
+                  <div className="section-container mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="section-header">
+                        <svg className="h-5 w-5 text-react-blue mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        Módulos Disponibles
+                      </h3>
+                      
+                      <div className="flex items-center">
+                        <label className="inline-flex items-center cursor-pointer mr-3">
+                          <input 
+                            type="checkbox" 
+                            checked={useCustomModules} 
+                            onChange={() => setUseCustomModules(!useCustomModules)} 
+                            className="sr-only peer"
+                          />
+                          <div className="relative w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                          <span className="ms-3 text-sm font-medium text-gray-300">Usar módulos personalizados</span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    {/* Descripción informativa */}
+                    <p className="text-sm text-gray-400 mb-4">
+                      Este DAG puede utilizar módulos Python personalizados que han sido configurados por los administradores del sistema.
+                      Puedes activar o desactivar el uso de estos módulos durante la validación.
+                    </p>
+                    
+                    {/* Botón para mostrar/ocultar módulos - MANTENEMOS ESTE DROPDOWN */}
+                    <motion.button
+                      onClick={() => setShowModulesManager(!showModulesManager)}
+                      className="btn-secondary flex items-center w-full justify-center"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                      {showModulesManager ? "Ocultar lista de módulos" : "Mostrar lista de módulos"}
+                    </motion.button>
+                    
+                    {/* Componente DependencyManager que se muestra solo cuando showModulesManager es true */}
+                    <AnimatePresence>
+                      {showModulesManager && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="mt-4"
+                        >
+                          <DependencyManager 
+                            onToggleUseCustom={(value) => setUseCustomModules(value)}
+                            useCustomDependencies={useCustomModules}
+                            dagCode={dagCode}
+                            readOnly={true}
+                            simplifiedMode={true} // Mostrar versión simplificada
+                            hideControls={true}  // Nueva propiedad para ocultar los controles duplicados
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   {/* Editor de código */}
                   <div className="section-container">
                     <h3 className="section-header">
@@ -352,6 +475,23 @@ with DAG(
                         className="w-full border-0 focus:outline-none"
                         data-color-mode="dark"
                       />
+                    </div>
+                    
+                    {/* Botón para analizar módulos importados del código */}
+                    <div className="flex justify-end mt-2">
+                      <motion.button
+                        onClick={analyzeModuleImports}
+                        className="btn-secondary flex items-center text-sm"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        title="Analizar módulos requeridos por este código"
+                        disabled={loading}
+                      >
+                        <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Analizar módulos requeridos
+                      </motion.button>
                     </div>
                   </div>
 
