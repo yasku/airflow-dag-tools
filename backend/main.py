@@ -2,7 +2,15 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from dag_validator import validate_dag
+from dag_validator import (
+    validate_dag, 
+    add_module_path,           # Mantener para compatibilidad
+    remove_dependency,         # Mantener para compatibilidad
+    get_available_modules,     # Nueva función
+    get_dependencies,          # Función renombrada pero mantenida para compatibilidad
+    analyze_dag_dependencies,
+    get_custom_modules_dir     # Nueva función
+)
 import tempfile
 import uuid
 import json
@@ -13,6 +21,7 @@ import base64
 from docstring_parser import parse as parse_docstring
 from pyment import PyComment
 import re
+from datetime import datetime
 
 # Inicializar la aplicación FastAPI
 app = FastAPI()
@@ -96,6 +105,14 @@ with DAG(
 TEMPLATES_DIR = "templates"
 os.makedirs(TEMPLATES_DIR, exist_ok=True)  # Create directory if it doesn't exist
 
+# Añadir a las constantes de directorios en main.py
+CUSTOM_MODULES_DIR = "custom_modules"
+os.makedirs(CUSTOM_MODULES_DIR, exist_ok=True)  # Crear carpeta si no existe
+
+# Después de las definiciones de directorios existentes, añadir este nuevo directorio
+MODULE_DOCS_DIR = "module_docs"
+os.makedirs(MODULE_DOCS_DIR, exist_ok=True)  # Crear la carpeta si no existe
+
 @app.get("/")
 def read_root():
     """
@@ -105,10 +122,15 @@ def read_root():
     return {"message": "API de Validación de DAGs en Airflow"}
 
 @app.post("/validate_dag/")
-async def validate_dag_endpoint(file: UploadFile = File(...)):
+async def validate_dag_endpoint(
+    file: UploadFile = File(...),
+    use_custom_dependencies: bool = True
+):
     """
     Valida un DAG usando un archivo temporal con nombre único.
     No persiste el archivo si es válido.
+    El parámetro use_custom_dependencies se mantiene para compatibilidad,
+    pero ahora siempre se utilizan los módulos disponibles.
     """
     try:
         # Crear un nombre temporal único usando uuid
@@ -121,7 +143,8 @@ async def validate_dag_endpoint(file: UploadFile = File(...)):
                 buffer.write(await file.read())
             
             # Validar el DAG
-            validation_result = validate_dag(file_location)
+            # Nota: use_custom_dependencies se ignora internamente, pero se mantiene para compatibilidad
+            validation_result = validate_dag(file_location, use_custom_dependencies)
             
             return validation_result
         finally:
@@ -623,3 +646,400 @@ async def delete_template(template_name: str):
         raise he
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/dependencies/")
+async def list_dependencies():
+    """
+    Lista todos los módulos disponibles registrados.
+    Se mantiene la ruta para compatibilidad con el frontend existente.
+    """
+    try:
+        modules_data = get_dependencies()
+        return modules_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/available_modules/")
+async def list_available_modules():
+    """
+    Lista todos los módulos disponibles registrados.
+    """
+    try:
+        modules_data = get_available_modules()
+        return modules_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/dependencies/package/")
+async def add_dependency_package(dependency_data: dict):
+    """
+    Endpoint obsoleto que no realiza ninguna acción.
+    Se mantiene para compatibilidad con el frontend existente.
+    """
+    return {"message": "Este endpoint está obsoleto. Use /upload_custom_module/ para gestionar módulos."}
+
+@app.post("/dependencies/module_path/")
+async def add_dependency_module_path(dependency_data: dict):
+    """
+    Añade una ruta de módulo personalizado.
+    Se mantiene la ruta para compatibilidad con el frontend existente.
+    """
+    try:
+        if not dependency_data.get("path"):
+            raise HTTPException(status_code=400, detail="La ruta del módulo es requerida")
+            
+        result = add_module_path(dependency_data["path"])
+        
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["message"])
+            
+        return {"message": result["message"]}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/dependencies/{dependency_type}/{value}")
+async def delete_dependency_endpoint(dependency_type: str, value: str):
+    """
+    Elimina una ruta de módulo específica.
+    Se mantiene la ruta para compatibilidad con el frontend existente.
+    """
+    try:
+        if dependency_type not in ["package", "module_path"]:
+            raise HTTPException(
+                status_code=400, 
+                detail="Tipo de dependencia no válido. Debe ser 'package' o 'module_path'"
+            )
+            
+        # Si es 'package', simplemente retornar éxito
+        if dependency_type == "package":
+            return {"message": "La gestión de paquetes está obsoleta. Use módulos personalizados."}
+            
+        result = remove_dependency(dependency_type, value)
+        
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["message"])
+            
+        return {"message": result["message"]}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/available_modules/")
+async def save_available_modules(modules_data: dict):
+    """
+    Guarda la configuración completa de módulos disponibles.
+    Útil para guardar cambios en bloque desde el panel de administración.
+    """
+    try:
+        # Aseguramos que el directorio de módulos personalizados siempre esté incluido
+        custom_modules_path = get_custom_modules_dir()
+        
+        if "modules_paths" not in modules_data:
+            modules_data["modules_paths"] = []
+            
+        if custom_modules_path not in modules_data["modules_paths"]:
+            modules_data["modules_paths"].append(custom_modules_path)
+            
+        # Eliminamos la sección de paquetes si existe
+        if "packages" in modules_data:
+            del modules_data["packages"]
+            
+        result = save_available_modules(modules_data)
+        
+        if not result:
+            raise HTTPException(status_code=400, detail="Error al guardar los módulos disponibles")
+            
+        return {"message": "Módulos disponibles guardados correctamente"}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/analyze_dag_dependencies/")
+async def analyze_dag_dependencies_endpoint(file: UploadFile = File(...)):
+    """
+    Analiza un archivo DAG para detectar posibles módulos importados.
+    Retorna una lista de módulos importados en el DAG.
+    """
+    try:
+        # Crear un nombre temporal único usando uuid
+        temp_filename = f"temp_analyze_{uuid.uuid4().hex}.py"
+        file_location = os.path.join(DAGS_DIR, temp_filename)
+        
+        try:
+            # Guardar el archivo temporal
+            with open(file_location, "wb") as buffer:
+                buffer.write(await file.read())
+            
+            # Analizar módulos importados en el DAG
+            analysis_result = analyze_dag_dependencies(file_location)
+            
+            return analysis_result
+        finally:
+            # Siempre eliminar el archivo temporal
+            if os.path.exists(file_location):
+                os.unlink(file_location)
+                
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/upload_custom_module/")
+async def upload_custom_module(file: UploadFile = File(...)):
+    """
+    Sube un módulo Python personalizado al directorio de módulos.
+    El archivo debe tener extensión .py
+    """
+    try:
+        # Verificar que es un archivo Python
+        if not file.filename.endswith('.py'):
+            raise HTTPException(
+                status_code=400,
+                detail="El archivo debe tener extensión .py"
+            )
+            
+        # Crear la ruta donde se guardará el módulo
+        module_path = os.path.join(CUSTOM_MODULES_DIR, file.filename)
+        
+        # Guardar el archivo
+        contents = await file.read()
+        with open(module_path, "wb") as f:
+            f.write(contents)
+            
+        # Asegurar que la ruta de módulos personalizados esté registrada
+        custom_modules_dir = get_custom_modules_dir()
+        add_module_path(custom_modules_dir)
+            
+        return {
+            "success": True, 
+            "message": f"Módulo {file.filename} guardado correctamente",
+            "module_path": module_path
+        }
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        
+@app.get("/list_custom_modules/")
+async def list_custom_modules():
+    """
+    Lista todos los módulos Python personalizados disponibles.
+    """
+    try:
+        modules = [f for f in os.listdir(CUSTOM_MODULES_DIR) if f.endswith('.py')]
+        # Estructura mejorada para incluir nombre y descripción
+        formatted_modules = []
+        for module in modules:
+            module_name = module
+            formatted_modules.append({
+                "name": module_name,
+                "description": "Módulo Python personalizado"
+            })
+        return {"modules": formatted_modules}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        
+@app.delete("/delete_custom_module/{module_name}")
+async def delete_custom_module(module_name: str):
+    """
+    Elimina un módulo personalizado.
+    """
+    try:
+        module_path = os.path.join(CUSTOM_MODULES_DIR, module_name)
+        if not os.path.exists(module_path):
+            raise HTTPException(
+                status_code=404,
+                detail=f"No se encontró el módulo {module_name}"
+            )
+            
+        os.remove(module_path)
+        return {"message": f"Módulo {module_name} eliminado correctamente"}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/get_custom_module/{module_name}")
+async def get_custom_module(module_name: str):
+    """
+    Obtiene el contenido de un módulo personalizado.
+    """
+    try:
+        module_path = os.path.join(CUSTOM_MODULES_DIR, module_name)
+        if not os.path.exists(module_path):
+            raise HTTPException(
+                status_code=404,
+                detail=f"No se encontró el módulo {module_name}"
+            )
+        
+        with open(module_path, "r") as file:
+            content = file.read()
+            
+        return {
+            "name": module_name,
+            "content": content,
+            "path": module_path
+        }
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/module_documentation/{module_name}")
+async def save_module_documentation(module_name: str, doc_data: dict):
+    """
+    Guarda la documentación asociada a un módulo específico.
+    La documentación se guarda en formato markdown.
+    """
+    try:
+        if not doc_data.get("content"):
+            raise HTTPException(status_code=400, detail="El contenido de la documentación es requerido")
+            
+        # Limpiar el nombre del módulo para usarlo como nombre de archivo
+        safe_module_name = module_name.replace(".py", "").replace("/", "_")
+        doc_file_path = os.path.join(MODULE_DOCS_DIR, f"{safe_module_name}_documentation.md")
+        
+        # Crear metadatos para el documento
+        metadata = {
+            "module_name": module_name,
+            "last_updated": datetime.now().isoformat(),
+            "author": doc_data.get("author", "Admin")
+        }
+        
+        # Guardar metadatos en un archivo JSON complementario
+        meta_file_path = os.path.join(MODULE_DOCS_DIR, f"{safe_module_name}_metadata.json")
+        with open(meta_file_path, "w", encoding="utf-8") as meta_file:
+            json.dump(metadata, meta_file, ensure_ascii=False, indent=2)
+            
+        # Guardar el contenido markdown
+        with open(doc_file_path, "w", encoding="utf-8") as doc_file:
+            doc_file.write(doc_data["content"])
+            
+        return {
+            "success": True,
+            "message": f"Documentación para {module_name} guardada correctamente",
+            "metadata": metadata
+        }
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al guardar la documentación: {str(e)}")
+
+@app.get("/module_documentation/{module_name}")
+async def get_module_documentation(module_name: str):
+    """
+    Obtiene la documentación asociada a un módulo específico.
+    Retorna el contenido markdown y los metadatos.
+    """
+    try:
+        # Limpiar el nombre del módulo para usarlo como nombre de archivo
+        safe_module_name = module_name.replace(".py", "").replace("/", "_")
+        doc_file_path = os.path.join(MODULE_DOCS_DIR, f"{safe_module_name}_documentation.md")
+        meta_file_path = os.path.join(MODULE_DOCS_DIR, f"{safe_module_name}_metadata.json")
+        
+        # Verificar si existe documentación para este módulo
+        if not os.path.exists(doc_file_path):
+            return {
+                "exists": False,
+                "content": f"# No hay documentación disponible\n\nEste módulo ({module_name}) no tiene documentación asociada.",
+                "metadata": {
+                    "module_name": module_name,
+                    "last_updated": None,
+                    "author": None
+                }
+            }
+            
+        # Leer el contenido markdown
+        with open(doc_file_path, "r", encoding="utf-8") as doc_file:
+            content = doc_file.read()
+            
+        # Leer los metadatos si existen
+        metadata = {
+            "module_name": module_name,
+            "last_updated": None,
+            "author": None
+        }
+        
+        if os.path.exists(meta_file_path):
+            with open(meta_file_path, "r", encoding="utf-8") as meta_file:
+                metadata = json.load(meta_file)
+                
+        return {
+            "exists": True,
+            "content": content,
+            "metadata": metadata
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener la documentación: {str(e)}")
+
+@app.delete("/module_documentation/{module_name}")
+async def delete_module_documentation(module_name: str):
+    """
+    Elimina la documentación asociada a un módulo específico.
+    """
+    try:
+        # Limpiar el nombre del módulo para usarlo como nombre de archivo
+        safe_module_name = module_name.replace(".py", "").replace("/", "_")
+        doc_file_path = os.path.join(MODULE_DOCS_DIR, f"{safe_module_name}_documentation.md")
+        meta_file_path = os.path.join(MODULE_DOCS_DIR, f"{safe_module_name}_metadata.json")
+        
+        # Verificar si existe documentación para este módulo
+        if not os.path.exists(doc_file_path):
+            raise HTTPException(status_code=404, detail=f"No existe documentación para el módulo {module_name}")
+            
+        # Eliminar archivos
+        if os.path.exists(doc_file_path):
+            os.remove(doc_file_path)
+        if os.path.exists(meta_file_path):
+            os.remove(meta_file_path)
+            
+        return {
+            "success": True,
+            "message": f"Documentación para {module_name} eliminada correctamente"
+        }
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al eliminar la documentación: {str(e)}")
+
+@app.get("/modules_with_documentation/")
+async def list_modules_with_documentation():
+    """
+    Obtiene la lista de módulos que tienen documentación asociada.
+    """
+    try:
+        modules_with_docs = []
+        
+        # Listar todos los archivos en el directorio de documentación
+        for filename in os.listdir(MODULE_DOCS_DIR):
+            if filename.endswith("_documentation.md"):
+                # Extraer el nombre del módulo del nombre del archivo
+                module_base_name = filename.replace("_documentation.md", "")
+                
+                # Reconstruir el nombre del módulo
+                module_name = f"{module_base_name}.py"
+                
+                # Obtener metadatos si existen
+                meta_file_path = os.path.join(MODULE_DOCS_DIR, f"{module_base_name}_metadata.json")
+                metadata = {
+                    "module_name": module_name,
+                    "last_updated": None,
+                    "author": None
+                }
+                
+                if os.path.exists(meta_file_path):
+                    with open(meta_file_path, "r", encoding="utf-8") as meta_file:
+                        metadata = json.load(meta_file)
+                        
+                modules_with_docs.append({
+                    "module_name": module_name,
+                    "metadata": metadata
+                })
+                
+        return {
+            "modules": modules_with_docs
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al listar módulos con documentación: {str(e)}")

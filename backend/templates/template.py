@@ -1,6 +1,7 @@
-from airflow import DAG agustinnnnnnnnnnnnnnnnnnnnn
+from airflow import DAG 
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
+from mod_oracle_query import Run_Oracle
 
 default_args = {
     'owner': 'airflow',
