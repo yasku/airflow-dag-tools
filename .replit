@@ -1,0 +1,8 @@
+modules = ["nodejs-20", "python-3.12", "web", "vue-node-20", "vue-node-18", "nodejs-22"]
+run = "uvicorn main:app --reload"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "uvicorn main:app --reload"]
