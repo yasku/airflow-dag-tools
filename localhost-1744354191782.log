@@ -1,0 +1,62 @@
+chunk-EM4EBM4K.js?v=c2250ba1:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+react-router-dom.js?v=c2250ba1:4393 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+warnOnce @ react-router-dom.js?v=c2250ba1:4393
+react-router-dom.js?v=c2250ba1:4393 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+warnOnce @ react-router-dom.js?v=c2250ba1:4393
+DocumentationEditor.jsx:540 Uncaught TypeError: sections.map is not a function
+    at DocumentationEditor (DocumentationEditor.jsx:540:23)
+    at renderWithHooks (chunk-EM4EBM4K.js?v=c2250ba1:11548:26)
+    at updateFunctionComponent (chunk-EM4EBM4K.js?v=c2250ba1:14582:28)
+    at beginWork (chunk-EM4EBM4K.js?v=c2250ba1:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-EM4EBM4K.js?v=c2250ba1:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-EM4EBM4K.js?v=c2250ba1:3699:24)
+    at invokeGuardedCallback (chunk-EM4EBM4K.js?v=c2250ba1:3733:39)
+    at beginWork$1 (chunk-EM4EBM4K.js?v=c2250ba1:19765:15)
+    at performUnitOfWork (chunk-EM4EBM4K.js?v=c2250ba1:19198:20)
+    at workLoopSync (chunk-EM4EBM4K.js?v=c2250ba1:19137:13)
+DocumentationEditor.jsx:540 Uncaught TypeError: sections.map is not a function
+    at DocumentationEditor (DocumentationEditor.jsx:540:23)
+    at renderWithHooks (chunk-EM4EBM4K.js?v=c2250ba1:11548:26)
+    at updateFunctionComponent (chunk-EM4EBM4K.js?v=c2250ba1:14582:28)
+    at beginWork (chunk-EM4EBM4K.js?v=c2250ba1:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-EM4EBM4K.js?v=c2250ba1:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-EM4EBM4K.js?v=c2250ba1:3699:24)
+    at invokeGuardedCallback (chunk-EM4EBM4K.js?v=c2250ba1:3733:39)
+    at beginWork$1 (chunk-EM4EBM4K.js?v=c2250ba1:19765:15)
+    at performUnitOfWork (chunk-EM4EBM4K.js?v=c2250ba1:19198:20)
+    at workLoopSync (chunk-EM4EBM4K.js?v=c2250ba1:19137:13)
+chunk-EM4EBM4K.js?v=c2250ba1:14032 The above error occurred in the <DocumentationEditor> component:
+
+    at DocumentationEditor (http://localhost:5173/src/components/admin/DocumentationEditor.jsx:28:46)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Admin (http://localhost:5173/src/pages/Admin.jsx:27:37)
+    at ProtectedRoute (http://localhost:5173/src/components/ProtectedRoute.jsx:20:27)
+    at RenderedRoute (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=c2250ba1:4088:5)
+    at Routes (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=c2250ba1:4558:5)
+    at main
+    at div
+    at Router (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=c2250ba1:4501:15)
+    at BrowserRouter (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=c2250ba1:5247:5)
+    at ConfigProvider (http://localhost:5173/src/context/ConfigContext.jsx:22:34)
+    at AuthProvider (http://localhost:5173/src/context/AuthContext.jsx:20:32)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-EM4EBM4K.js?v=c2250ba1:14032
+chunk-EM4EBM4K.js?v=c2250ba1:19413 Uncaught TypeError: sections.map is not a function
+    at DocumentationEditor (DocumentationEditor.jsx:540:23)
+    at renderWithHooks (chunk-EM4EBM4K.js?v=c2250ba1:11548:26)
+    at updateFunctionComponent (chunk-EM4EBM4K.js?v=c2250ba1:14582:28)
+    at beginWork (chunk-EM4EBM4K.js?v=c2250ba1:15924:22)
+    at beginWork$1 (chunk-EM4EBM4K.js?v=c2250ba1:19753:22)
+    at performUnitOfWork (chunk-EM4EBM4K.js?v=c2250ba1:19198:20)
+    at workLoopSync (chunk-EM4EBM4K.js?v=c2250ba1:19137:13)
+    at renderRootSync (chunk-EM4EBM4K.js?v=c2250ba1:19116:15)
+    at recoverFromConcurrentError (chunk-EM4EBM4K.js?v=c2250ba1:18736:28)
+    at performConcurrentWorkOnRoot (chunk-EM4EBM4K.js?v=c2250ba1:18684:30)

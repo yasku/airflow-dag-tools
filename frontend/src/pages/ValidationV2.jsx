@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import DagList from '../components/DagList';
+import DependencyManager from '../components/DependencyManager';
 
 function ValidationV2() {
   const [file, setFile] = useState(null);
@@ -11,6 +12,10 @@ function ValidationV2() {
   const [dagCode, setDagCode] = useState("");
   const [validationResult, setValidationResult] = useState(null);
   const [selectedDagName, setSelectedDagName] = useState(null);
+  
+  // Renombramos los estados para reflejar el enfoque en módulos
+  const [useCustomModules, setUseCustomModules] = useState(true);
+  const [showModulesManager, setShowModulesManager] = useState(false);
 
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
@@ -51,8 +56,11 @@ function ValidationV2() {
       formData.append("file", dagBlob, selectedDagName);
     }
 
+    // Mantenemos el nombre del parámetro para compatibilidad con el backend
+    const url = `http://127.0.0.1:8000/validate_dag/?use_custom_dependencies=${useCustomModules}`;
+
     try {
-      const response = await fetch("http://127.0.0.1:8000/validate_dag/", {
+      const response = await fetch(url, {
         method: "POST",
         body: formData,
       });
@@ -140,6 +148,72 @@ function ValidationV2() {
                         </div>
                       </label>
                     </div>
+                  </div>
+
+                  {/* Sección de módulos disponibles (antes "dependencias") */}
+                  <div className="section-container mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="section-header">
+                        <svg className="h-5 w-5 text-react-blue mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        Módulos Disponibles
+                      </h3>
+                      
+                      <div className="flex items-center">
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={useCustomModules} 
+                            onChange={() => setUseCustomModules(!useCustomModules)} 
+                            className="sr-only peer"
+                          />
+                          <div className="relative w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                          <span className="ms-3 text-sm font-medium text-gray-300">Usar módulos personalizados</span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    {/* Descripción informativa */}
+                    <p className="text-sm text-gray-400 mb-4">
+                      Al validar este DAG, puede utilizar módulos Python personalizados que han sido configurados
+                      por los administradores del sistema. Puede activar o desactivar esta opción según sus necesidades.
+                    </p>
+                    
+                    {/* Botón para mostrar/ocultar módulos */}
+                    <motion.button
+                      onClick={() => setShowModulesManager(!showModulesManager)}
+                      className="btn-secondary flex items-center w-full justify-center"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                      {showModulesManager ? "Ocultar lista de módulos" : "Mostrar lista de módulos"}
+                    </motion.button>
+                    
+                    {/* Componente DependencyManager con hideControls=true para evitar duplicación */}
+                    <AnimatePresence>
+                      {showModulesManager && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="mt-4"
+                        >
+                          <DependencyManager 
+                            onToggleUseCustom={(value) => setUseCustomModules(value)}
+                            useCustomDependencies={useCustomModules}
+                            dagCode={dagCode}
+                            readOnly={true}
+                            simplifiedMode={true}
+                            hideControls={true}
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {/* Botón de validación */}

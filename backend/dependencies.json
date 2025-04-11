@@ -1,0 +1,17 @@
+{"packages": [
+  {
+    "name": "pandas",
+    "version": "1.5.3",
+    "description": "Biblioteca de análisis de datos"
+  }
+], "modules_paths": [
+  {
+    "path": "/ruta/a/modulos",
+    "description": "Módulos personalizados para procesamiento de datos"
+  }
+], "custom_modules": [
+  {
+    "name": "custom_module.py",
+    "description": "Funciones auxiliares para cálculos específicos"
+  }
+]}

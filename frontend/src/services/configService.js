@@ -14,7 +14,7 @@ export const configService = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ sections }),
+      body: JSON.stringify(sections.hasOwnProperty('sections') ? sections : { sections }),
     });
     if (!response.ok) throw new Error('Error al actualizar la documentación');
     return response.json();

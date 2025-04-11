@@ -1,0 +1,147 @@
+chunk-EM4EBM4K.js?v=c2250ba1:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+react-router-dom.js?v=c2250ba1:4393 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+warnOnce @ react-router-dom.js?v=c2250ba1:4393
+logDeprecation @ react-router-dom.js?v=c2250ba1:4396
+logV6DeprecationWarnings @ react-router-dom.js?v=c2250ba1:4399
+(anónimo) @ react-router-dom.js?v=c2250ba1:5271
+commitHookEffectListMount @ chunk-EM4EBM4K.js?v=c2250ba1:16915
+commitPassiveMountOnFiber @ chunk-EM4EBM4K.js?v=c2250ba1:18156
+commitPassiveMountEffects_complete @ chunk-EM4EBM4K.js?v=c2250ba1:18129
+commitPassiveMountEffects_begin @ chunk-EM4EBM4K.js?v=c2250ba1:18119
+commitPassiveMountEffects @ chunk-EM4EBM4K.js?v=c2250ba1:18109
+flushPassiveEffectsImpl @ chunk-EM4EBM4K.js?v=c2250ba1:19490
+flushPassiveEffects @ chunk-EM4EBM4K.js?v=c2250ba1:19447
+(anónimo) @ chunk-EM4EBM4K.js?v=c2250ba1:19328
+workLoop @ chunk-EM4EBM4K.js?v=c2250ba1:197
+flushWork @ chunk-EM4EBM4K.js?v=c2250ba1:176
+performWorkUntilDeadline @ chunk-EM4EBM4K.js?v=c2250ba1:384
+react-router-dom.js?v=c2250ba1:4393 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+warnOnce @ react-router-dom.js?v=c2250ba1:4393
+logDeprecation @ react-router-dom.js?v=c2250ba1:4396
+logV6DeprecationWarnings @ react-router-dom.js?v=c2250ba1:4402
+(anónimo) @ react-router-dom.js?v=c2250ba1:5271
+commitHookEffectListMount @ chunk-EM4EBM4K.js?v=c2250ba1:16915
+commitPassiveMountOnFiber @ chunk-EM4EBM4K.js?v=c2250ba1:18156
+commitPassiveMountEffects_complete @ chunk-EM4EBM4K.js?v=c2250ba1:18129
+commitPassiveMountEffects_begin @ chunk-EM4EBM4K.js?v=c2250ba1:18119
+commitPassiveMountEffects @ chunk-EM4EBM4K.js?v=c2250ba1:18109
+flushPassiveEffectsImpl @ chunk-EM4EBM4K.js?v=c2250ba1:19490
+flushPassiveEffects @ chunk-EM4EBM4K.js?v=c2250ba1:19447
+(anónimo) @ chunk-EM4EBM4K.js?v=c2250ba1:19328
+workLoop @ chunk-EM4EBM4K.js?v=c2250ba1:197
+flushWork @ chunk-EM4EBM4K.js?v=c2250ba1:176
+performWorkUntilDeadline @ chunk-EM4EBM4K.js?v=c2250ba1:384
+DocumentationV2.jsx:141 Uncaught TypeError: docSections.map is not a function
+    at DocumentationV2.jsx:141:22
+    at renderWithHooks (chunk-EM4EBM4K.js?v=c2250ba1:11548:26)
+    at mountIndeterminateComponent (chunk-EM4EBM4K.js?v=c2250ba1:14926:21)
+    at beginWork (chunk-EM4EBM4K.js?v=c2250ba1:15914:22)
+    at HTMLUnknownElement.callCallback2 (chunk-EM4EBM4K.js?v=c2250ba1:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-EM4EBM4K.js?v=c2250ba1:3699:24)
+    at invokeGuardedCallback (chunk-EM4EBM4K.js?v=c2250ba1:3733:39)
+    at beginWork$1 (chunk-EM4EBM4K.js?v=c2250ba1:19765:15)
+    at performUnitOfWork (chunk-EM4EBM4K.js?v=c2250ba1:19198:20)
+    at workLoopSync (chunk-EM4EBM4K.js?v=c2250ba1:19137:13)
+(anónimo) @ DocumentationV2.jsx:141
+renderWithHooks @ chunk-EM4EBM4K.js?v=c2250ba1:11548
+mountIndeterminateComponent @ chunk-EM4EBM4K.js?v=c2250ba1:14926
+beginWork @ chunk-EM4EBM4K.js?v=c2250ba1:15914
+callCallback2 @ chunk-EM4EBM4K.js?v=c2250ba1:3674
+invokeGuardedCallbackDev @ chunk-EM4EBM4K.js?v=c2250ba1:3699
+invokeGuardedCallback @ chunk-EM4EBM4K.js?v=c2250ba1:3733
+beginWork$1 @ chunk-EM4EBM4K.js?v=c2250ba1:19765
+performUnitOfWork @ chunk-EM4EBM4K.js?v=c2250ba1:19198
+workLoopSync @ chunk-EM4EBM4K.js?v=c2250ba1:19137
+renderRootSync @ chunk-EM4EBM4K.js?v=c2250ba1:19116
+performConcurrentWorkOnRoot @ chunk-EM4EBM4K.js?v=c2250ba1:18678
+workLoop @ chunk-EM4EBM4K.js?v=c2250ba1:197
+flushWork @ chunk-EM4EBM4K.js?v=c2250ba1:176
+performWorkUntilDeadline @ chunk-EM4EBM4K.js?v=c2250ba1:384
+DocumentationV2.jsx:141 Uncaught TypeError: docSections.map is not a function
+    at DocumentationV2.jsx:141:22
+    at renderWithHooks (chunk-EM4EBM4K.js?v=c2250ba1:11548:26)
+    at mountIndeterminateComponent (chunk-EM4EBM4K.js?v=c2250ba1:14926:21)
+    at beginWork (chunk-EM4EBM4K.js?v=c2250ba1:15914:22)
+    at HTMLUnknownElement.callCallback2 (chunk-EM4EBM4K.js?v=c2250ba1:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-EM4EBM4K.js?v=c2250ba1:3699:24)
+    at invokeGuardedCallback (chunk-EM4EBM4K.js?v=c2250ba1:3733:39)
+    at beginWork$1 (chunk-EM4EBM4K.js?v=c2250ba1:19765:15)
+    at performUnitOfWork (chunk-EM4EBM4K.js?v=c2250ba1:19198:20)
+    at workLoopSync (chunk-EM4EBM4K.js?v=c2250ba1:19137:13)
+(anónimo) @ DocumentationV2.jsx:141
+renderWithHooks @ chunk-EM4EBM4K.js?v=c2250ba1:11548
+mountIndeterminateComponent @ chunk-EM4EBM4K.js?v=c2250ba1:14926
+beginWork @ chunk-EM4EBM4K.js?v=c2250ba1:15914
+callCallback2 @ chunk-EM4EBM4K.js?v=c2250ba1:3674
+invokeGuardedCallbackDev @ chunk-EM4EBM4K.js?v=c2250ba1:3699
+invokeGuardedCallback @ chunk-EM4EBM4K.js?v=c2250ba1:3733
+beginWork$1 @ chunk-EM4EBM4K.js?v=c2250ba1:19765
+performUnitOfWork @ chunk-EM4EBM4K.js?v=c2250ba1:19198
+workLoopSync @ chunk-EM4EBM4K.js?v=c2250ba1:19137
+renderRootSync @ chunk-EM4EBM4K.js?v=c2250ba1:19116
+recoverFromConcurrentError @ chunk-EM4EBM4K.js?v=c2250ba1:18736
+performConcurrentWorkOnRoot @ chunk-EM4EBM4K.js?v=c2250ba1:18684
+workLoop @ chunk-EM4EBM4K.js?v=c2250ba1:197
+flushWork @ chunk-EM4EBM4K.js?v=c2250ba1:176
+performWorkUntilDeadline @ chunk-EM4EBM4K.js?v=c2250ba1:384
+chunk-EM4EBM4K.js?v=c2250ba1:14032 The above error occurred in one of your React components:
+
+    at http://localhost:5173/src/pages/DocumentationV2.jsx:120:8
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at DocumentationV2 (http://localhost:5173/src/pages/DocumentationV2.jsx:26:36)
+    at RenderedRoute (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=c2250ba1:4088:5)
+    at Routes (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=c2250ba1:4558:5)
+    at main
+    at div
+    at Router (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=c2250ba1:4501:15)
+    at BrowserRouter (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=c2250ba1:5247:5)
+    at ConfigProvider (http://localhost:5173/src/context/ConfigContext.jsx:22:34)
+    at AuthProvider (http://localhost:5173/src/context/AuthContext.jsx:20:32)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-EM4EBM4K.js?v=c2250ba1:14032
+update.callback @ chunk-EM4EBM4K.js?v=c2250ba1:14052
+callCallback @ chunk-EM4EBM4K.js?v=c2250ba1:11248
+commitUpdateQueue @ chunk-EM4EBM4K.js?v=c2250ba1:11265
+commitLayoutEffectOnFiber @ chunk-EM4EBM4K.js?v=c2250ba1:17093
+commitLayoutMountEffects_complete @ chunk-EM4EBM4K.js?v=c2250ba1:17980
+commitLayoutEffects_begin @ chunk-EM4EBM4K.js?v=c2250ba1:17969
+commitLayoutEffects @ chunk-EM4EBM4K.js?v=c2250ba1:17920
+commitRootImpl @ chunk-EM4EBM4K.js?v=c2250ba1:19353
+commitRoot @ chunk-EM4EBM4K.js?v=c2250ba1:19277
+finishConcurrentRender @ chunk-EM4EBM4K.js?v=c2250ba1:18760
+performConcurrentWorkOnRoot @ chunk-EM4EBM4K.js?v=c2250ba1:18718
+workLoop @ chunk-EM4EBM4K.js?v=c2250ba1:197
+flushWork @ chunk-EM4EBM4K.js?v=c2250ba1:176
+performWorkUntilDeadline @ chunk-EM4EBM4K.js?v=c2250ba1:384
+chunk-EM4EBM4K.js?v=c2250ba1:19413 Uncaught TypeError: docSections.map is not a function
+    at DocumentationV2.jsx:141:22
+    at renderWithHooks (chunk-EM4EBM4K.js?v=c2250ba1:11548:26)
+    at mountIndeterminateComponent (chunk-EM4EBM4K.js?v=c2250ba1:14926:21)
+    at beginWork (chunk-EM4EBM4K.js?v=c2250ba1:15914:22)
+    at beginWork$1 (chunk-EM4EBM4K.js?v=c2250ba1:19753:22)
+    at performUnitOfWork (chunk-EM4EBM4K.js?v=c2250ba1:19198:20)
+    at workLoopSync (chunk-EM4EBM4K.js?v=c2250ba1:19137:13)
+    at renderRootSync (chunk-EM4EBM4K.js?v=c2250ba1:19116:15)
+    at recoverFromConcurrentError (chunk-EM4EBM4K.js?v=c2250ba1:18736:28)
+    at performConcurrentWorkOnRoot (chunk-EM4EBM4K.js?v=c2250ba1:18684:30)
+(anónimo) @ DocumentationV2.jsx:141
+renderWithHooks @ chunk-EM4EBM4K.js?v=c2250ba1:11548
+mountIndeterminateComponent @ chunk-EM4EBM4K.js?v=c2250ba1:14926
+beginWork @ chunk-EM4EBM4K.js?v=c2250ba1:15914
+beginWork$1 @ chunk-EM4EBM4K.js?v=c2250ba1:19753
+performUnitOfWork @ chunk-EM4EBM4K.js?v=c2250ba1:19198
+workLoopSync @ chunk-EM4EBM4K.js?v=c2250ba1:19137
+renderRootSync @ chunk-EM4EBM4K.js?v=c2250ba1:19116
+recoverFromConcurrentError @ chunk-EM4EBM4K.js?v=c2250ba1:18736
+performConcurrentWorkOnRoot @ chunk-EM4EBM4K.js?v=c2250ba1:18684
+workLoop @ chunk-EM4EBM4K.js?v=c2250ba1:197
+flushWork @ chunk-EM4EBM4K.js?v=c2250ba1:176
+performWorkUntilDeadline @ chunk-EM4EBM4K.js?v=c2250ba1:384

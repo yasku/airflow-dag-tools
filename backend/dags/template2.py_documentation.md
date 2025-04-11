@@ -1,23 +1,20 @@
-# Documentación del DAG: prueba6.py
+# Documentación del DAG: template2.py
 
 ## Información General
 
 **Descripción:**  
-sadasd
+sadadasd
 
 **Programación:**  
-asdsad
+asdadasd
 
 **Responsable:**  
-asdasd
+asdsadsa
 
 ## Tareas
 
-### asdad
-asdsa
-
-## Dependencias
-asdsadas
+### asdsad
+asdsad
 
 ## Notas Adicionales
-asdasdsad
+asdadasdasdsadad

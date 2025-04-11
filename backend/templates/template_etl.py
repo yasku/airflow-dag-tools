@@ -1,4 +1,4 @@
-from airflow import DAG 
+from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 
@@ -17,9 +17,9 @@ def example_function():
     print("Hello from the example function!")
 
 with DAG(
-    'example_dag',
+    'new_template_dag',
     default_args=default_args,
-    description='An example DAG',
+    description='An example DAG template',
     schedule_interval=timedelta(days=1),
     catchup=False,
 ) as dag:

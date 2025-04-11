@@ -14,7 +14,7 @@ function Footer() {
               </span>
             </div>
             <p className="text-sm text-gray-400 mt-1">
-              Validación y generación de DAGs de Apache Airflow
+              Herramienta desarollada por el equipo de Big Data & Analytics - Agustin Yaskuloski
             </p>
           </div>
           
@@ -36,7 +36,7 @@ function Footer() {
         
         <div className="mt-8 pt-6 border-t border-react-border/20 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-gray-400">
-            &copy; {currentYear} AirFlow DAG Validator. Todos los derechos reservados.
+            &copy; {currentYear} Agustin Yaskuloski - Claro AMX. Todos los derechos reservados.
           </p>
           <div className="mt-4 md:mt-0 flex gap-4">
             <a href="#" className="text-gray-400 hover:text-react-blue transition-colors duration-200">
