@@ -37,7 +37,8 @@ function DagDocumentationV2() {
       
       const data = await response.json();
       setDocumentation(data.documentation);
-      showToast.success('Documentación generada correctamente');
+      
+      showToast.success('Documentación generada y guardada correctamente');
     } catch (error) {
       console.error('Error:', error);
       showToast.error('Error al generar la documentación');
@@ -119,6 +120,7 @@ function DagDocumentationV2() {
                           </h3>
                           <MarkdownViewer 
                             content={documentation}
+                            dagName={selectedDag}
                             onDownload={() => {
                               const element = document.createElement('a');
                               const file = new Blob([documentation], {type: 'text/markdown'});

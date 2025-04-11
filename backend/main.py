@@ -113,6 +113,10 @@ os.makedirs(CUSTOM_MODULES_DIR, exist_ok=True)  # Crear carpeta si no existe
 MODULE_DOCS_DIR = "module_docs"
 os.makedirs(MODULE_DOCS_DIR, exist_ok=True)  # Crear la carpeta si no existe
 
+# Añadir a las constantes de directorios en main.py
+DAG_DOCS_DIR = "dag_docs"
+os.makedirs(DAG_DOCS_DIR, exist_ok=True)  # Crear la carpeta si no existe
+
 @app.get("/")
 def read_root():
     """
@@ -283,15 +287,53 @@ async def get_documentation():
             return DEFAULT_DOCUMENTATION
         
         with open(DOC_CONFIG_FILE, 'r') as f:
-            return json.load(f)
+            data = json.load(f)
+            
+        # Normalizar la estructura de datos para manejar casos incorrectos
+        if "sections" in data:
+            if isinstance(data["sections"], dict) and "sections" in data["sections"]:
+                # Estructura anidada incorrecta - corregir
+                data = {"sections": data["sections"]["sections"]}
+            elif isinstance(data["sections"], list):
+                # Estructura correcta
+                pass
+            else:
+                # Estructura desconocida - usar predeterminado
+                data = DEFAULT_DOCUMENTATION
+        else:
+            # Sin secciones - usar predeterminado
+            data = DEFAULT_DOCUMENTATION
+            
+        return data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.put("/config/documentation/")
 async def update_documentation(sections: dict):
     try:
+        # Verificar y normalizar la estructura de datos
+        if "sections" in sections:
+            # Si recibimos un objeto con propiedad 'sections'
+            if isinstance(sections["sections"], dict) and "sections" in sections["sections"]:
+                # Corregir anidamiento incorrecto
+                data_to_save = {"sections": sections["sections"]["sections"]}
+            elif isinstance(sections["sections"], list):
+                # Estructura correcta
+                data_to_save = {"sections": sections["sections"]}
+            else:
+                # Otro tipo de dato, probablemente incorrecto - usar array vacío
+                data_to_save = {"sections": []}
+        else:
+            # Si no tiene propiedad 'sections', asumimos que es directamente el array
+            # de secciones o que es un objeto con estructura incorrecta
+            if isinstance(sections, list):
+                data_to_save = {"sections": sections}
+            else:
+                # Objeto con estructura desconocida - usar array vacío
+                data_to_save = {"sections": []}
+            
         with open(DOC_CONFIG_FILE, 'w') as f:
-            json.dump(sections, f, indent=2)
+            json.dump(data_to_save, f, indent=2)
         return {"message": "Documentación actualizada correctamente"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -510,6 +552,36 @@ def extract_dag_info(dag_file_path):
     
     return dag_info
 
+@app.post("/save_dag_documentation")
+async def save_dag_documentation(request: dict):
+    """
+    Guarda la documentación del DAG en una carpeta específica con el nombre del DAG.
+    """
+    try:
+        dag_name = request.get("dag_name")
+        content = request.get("content")
+        
+        if not dag_name or not content:
+            raise HTTPException(status_code=400, detail="El nombre del DAG y el contenido son requeridos")
+        
+        # Crear directorio para este DAG si no existe
+        dag_doc_dir = os.path.join(DAG_DOCS_DIR, dag_name)
+        os.makedirs(dag_doc_dir, exist_ok=True)
+        
+        # Ruta del archivo
+        filepath = os.path.join(dag_doc_dir, f"{dag_name}_documentation.md")
+        
+        # Guardar el contenido en el archivo
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content)
+        
+        return {
+            "success": True,
+            "filepath": filepath
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/generate_dag_doc/{dag_name}")
 async def generate_dag_doc(dag_name: str, doc_data: dict):
     try:
@@ -548,12 +620,23 @@ async def generate_dag_doc(dag_name: str, doc_data: dict):
 {doc_data['notes']}
 """
 
-        # Guardar el markdown en un archivo
+        # Guardar el markdown en un archivo (mantener para compatibilidad)
         doc_path = os.path.join(DAGS_DIR, f"{dag_name}_documentation.md")
         with open(doc_path, "w", encoding='utf-8') as f:
             f.write(markdown)
+            
+        # Guardar también en la carpeta específica del DAG
+        dag_doc_dir = os.path.join(DAG_DOCS_DIR, dag_name)
+        os.makedirs(dag_doc_dir, exist_ok=True)
+        
+        # Ruta del archivo en la carpeta específica
+        filepath = os.path.join(dag_doc_dir, f"{dag_name}_documentation.md")
+        
+        # Guardar el contenido en el archivo
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(markdown)
 
-        return {"documentation": markdown}
+        return {"documentation": markdown, "filepath": filepath}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

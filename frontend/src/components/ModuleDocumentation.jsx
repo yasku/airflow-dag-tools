@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import toast from 'react-hot-toast';
 
-// Estilos específicos para Markdown
+// Estilos específicos para Markdown - movidos a una constante para no recrearlos en cada render
 const markdownStyles = `
   .markdown-content {
     background-color: #1A1D23; /* Fondo más oscuro */
@@ -131,16 +130,41 @@ const markdownStyles = `
   }
 `;
 
-function ModuleDocumentation({ moduleName, customContent, isSection = false }) {
+// URL base para las solicitudes API - extraída para su fácil modificación
+const API_BASE_URL = 'http://127.0.0.1:8000';
+
+// Componente de Spinner para el estado de carga
+const LoadingSpinner = () => (
+  <div className="py-8 text-center">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-react-blue mx-auto"></div>
+  </div>
+);
+
+// Componente de Error
+const ErrorMessage = ({ message }) => (
+  <div className="bg-red-900/20 text-red-400 p-4 rounded-lg">
+    {message}
+  </div>
+);
+
+function ModuleDocumentation({ moduleName, customContent, isSection = false, documentMetadata = null }) {
   const [docContent, setDocContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [metadata, setMetadata] = useState(null);
 
+  // Efecto para cargar el contenido
   useEffect(() => {
+    // Reiniciar el estado de error cuando cambian las props principales
+    setError(null);
+    
     // Si se proporciona contenido personalizado, úsalo directamente
     if (customContent) {
       setDocContent(customContent);
+      // Si también se proporciona documentMetadata, usarlo en lugar de cargar metadatos
+      if (documentMetadata && documentMetadata.metadata) {
+        setMetadata(documentMetadata.metadata);
+      }
       setLoading(false);
       return;
     }
@@ -148,42 +172,54 @@ function ModuleDocumentation({ moduleName, customContent, isSection = false }) {
     // De lo contrario, cargar documentación del módulo
     if (moduleName) {
       loadModuleDocumentation(moduleName);
+    } else {
+      // Si no hay ni contenido ni moduleName, limpiar el contenido
+      setDocContent('');
+      setMetadata(null);
     }
-  }, [moduleName, customContent]);
+  }, [moduleName, customContent, documentMetadata]);
 
+  // Función para cargar la documentación del módulo
   const loadModuleDocumentation = async (module) => {
+    if (!module) return;
+    
     setLoading(true);
     try {
-      // Agregar explícitamente la URL base
-      const response = await fetch(`http://127.0.0.1:8000/module_documentation/${module}`);
+      const response = await fetch(`${API_BASE_URL}/module_documentation/${module}`);
       if (!response.ok) {
         throw new Error(`Error al cargar la documentación: ${response.statusText}`);
       }
       const data = await response.json();
-      setDocContent(data.content);
-      setMetadata(data.metadata);
+      setDocContent(data.content || '');
+      setMetadata(data.metadata || null);
     } catch (err) {
       console.error("Error cargando documentación:", err);
       setError(`Error: ${err.message}`);
+      toast.error(`Error al cargar la documentación: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
+  // Contenido del markdown memoizado para evitar re-renders innecesarios
+  const markdownContent = useMemo(() => (
+    <div className="markdown-content prose prose-invert max-w-none">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
+      >
+        {docContent}
+      </ReactMarkdown>
+    </div>
+  ), [docContent]);
+
+  // Renderizado condicional basado en el estado
   if (loading) {
-    return (
-      <div className="py-8 text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-react-blue mx-auto"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (error && !customContent) {
-    return (
-      <div className="bg-red-900/20 text-red-400 p-4 rounded-lg">
-        {error}
-      </div>
-    );
+    return <ErrorMessage message={error} />;
   }
 
   return (
@@ -191,31 +227,8 @@ function ModuleDocumentation({ moduleName, customContent, isSection = false }) {
       {/* Agregar los estilos de Markdown */}
       <style>{markdownStyles}</style>
       
-      {!isSection && metadata && (
-        <div className="mb-4">
-          {metadata.author && (
-            <div className="text-sm text-gray-400">
-              Autor: <span className="text-gray-300">{metadata.author}</span>
-            </div>
-          )}
-          {metadata.last_updated && (
-            <div className="text-sm text-gray-400">
-              Última actualización: <span className="text-gray-300">
-                {new Date(metadata.last_updated).toLocaleDateString()}
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-      
-      <div className="markdown-content prose prose-invert max-w-none">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw]}
-        >
-          {docContent}
-        </ReactMarkdown>
-      </div>
+      {/* Contenido Markdown - usando el componente memoizado */}
+      {markdownContent}
     </div>
   );
 }

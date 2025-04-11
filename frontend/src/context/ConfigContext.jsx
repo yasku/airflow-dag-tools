@@ -20,11 +20,32 @@ export const ConfigProvider = ({ children }) => {
           configService.getDagTemplate()
         ]);
         
-        setDocSections(docsData.sections);
+        // Validar y normalizar la estructura de los datos de documentación
+        if (docsData && docsData.sections) {
+          if (Array.isArray(docsData.sections)) {
+            // Formato correcto
+            setDocSections(docsData.sections);
+          } else if (typeof docsData.sections === 'object' && docsData.sections.sections && Array.isArray(docsData.sections.sections)) {
+            // Formato anidado incorrecto que podría ocurrir
+            console.warn('Formato de datos anidado detectado. Normalizando...');
+            setDocSections(docsData.sections.sections);
+          } else {
+            // Formato desconocido
+            console.error('Formato de datos de documentación inesperado:', docsData);
+            setDocSections([]);
+            toast.error('Error en el formato de la documentación');
+          }
+        } else {
+          // No hay datos o formato inválido
+          console.error('Datos de documentación inválidos:', docsData);
+          setDocSections([]);
+        }
+        
         setDagTemplate(templateData.template);
       } catch (error) {
         console.error('Error al cargar la configuración:', error);
         toast.error('Error al cargar la configuración');
+        setDocSections([]); // Establecer un valor predeterminado seguro
       } finally {
         setLoading(false);
       }
@@ -36,10 +57,20 @@ export const ConfigProvider = ({ children }) => {
   // Funciones para actualizar la configuración
   const updateDocSections = async (newSections) => {
     try {
+      // Guardar copia del estado actual para restaurar en caso de error
+      const currentSections = [...docSections];
+      
+      // Actualizar inmediatamente el UI para mejor experiencia
+      setDocSections(Array.isArray(newSections) ? newSections : newSections.sections || []);
+      
+      // Enviar al backend
       await configService.updateDocSections(newSections);
-      setDocSections(newSections);
+      
       toast.success('Documentación actualizada');
     } catch (error) {
+      // Si hay error, restaurar estado anterior
+      setDocSections(currentSections);
+      
       console.error('Error al actualizar la documentación:', error);
       toast.error('Error al actualizar la documentación');
       throw error;

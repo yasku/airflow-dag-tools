@@ -1,0 +1,86 @@
+# NOTAS PARA DOCUMENTACIÓN TÉCNICA DEL BACKEND
+
+## Estructura general del backend
+- custom_modules/: Módulos personalizados para Airflow
+- dags/: Definiciones de DAGs (Directed Acyclic Graphs) para Airflow
+- dag_docs/: Documentación de DAGs
+- module_docs/: Documentación de módulos personalizados
+- config/: Archivos de configuración
+- templates/: Plantillas para DAGs
+- main.py: Archivo principal de la API FastAPI
+- dag_validator.py: Validador de DAGs para Airflow
+- available_modules.json: Configuración de rutas de módulos
+- dependencies.json: Definición de dependencias del proyecto
+- requirements.txt: Requisitos de Python para el proyecto
+
+## Análisis detallado por carpeta
+
+### main.py (Archivo principal de la API)
+- Implementa una API REST con FastAPI para gestionar DAGs de Airflow
+- Contiene endpoints para:
+  - Validar DAGs
+  - Guardar y gestionar DAGs
+  - Gestionar documentación
+  - Generar diagramas de DAGs
+  - Gestionar plantillas de DAGs
+  - Gestionar módulos personalizados
+  - Gestionar la documentación de módulos
+- Funcionalidades principales:
+  - Validación de código Python y estructura de DAGs para Airflow
+  - Guardado y gestión de DAGs
+  - Generación automática de documentación
+  - Generación de diagramas de DAGs
+  - Gestión de módulos personalizados
+  - Sistema de plantillas para reutilización de código
+
+### dag_validator.py (Validador de DAGs)
+- Implementa la lógica para validar DAGs de Airflow sin ejecutarlos
+- Utiliza ast para verificar errores de sintaxis Python
+- Utiliza DagBag de Airflow para validar la estructura del DAG
+- Permite incluir módulos personalizados durante la validación
+- Funciones principales:
+  - validate_dag: Valida un DAG usando el parser de Airflow
+  - analyze_dag_dependencies: Analiza dependencias en un archivo DAG
+  - load_available_modules/save_available_modules: Gestiona la configuración de módulos
+
+### custom_modules/ (Módulos personalizados)
+- Directorio que contiene módulos Python personalizados para ser utilizados en los DAGs
+- Contiene módulos como:
+  - mod_postgres_query.py: Funciones para trabajar con PostgreSQL
+  - mod_oracle_query.py: Funciones para trabajar con Oracle
+  - dag_test.py: DAG de ejemplo para pruebas
+- Estos módulos son administrados a través de la API y pueden ser cargados por los usuarios
+
+### dags/ (Definiciones de DAGs)
+- Contiene los DAGs (flujos de trabajo) de Airflow
+- Los DAGs pueden ser creados, editados y eliminados a través de la API
+- Incluye ejemplos como example_dag.py, que implementa un proceso ETL básico
+- Cada DAG puede tener su documentación asociada (archivos .md)
+
+### templates/ (Plantillas para DAGs)
+- Contiene plantillas de DAGs que pueden reutilizarse
+- Las plantillas son archivos Python con estructuras base para diferentes tipos de flujos
+- Facilita la creación de nuevos DAGs basados en plantillas predefinidas
+
+### config/ (Archivos de configuración)
+- Contiene configuraciones del sistema
+- documentation.json: Configuración de la documentación del sistema
+- template.py: Plantilla por defecto para DAGs
+
+### module_docs/ y dag_docs/ (Documentación)
+- Almacena la documentación en formato Markdown para módulos y DAGs
+- Incluye metadatos como autor y fecha de última modificación
+- La documentación se puede generar, modificar y consultar a través de la API
+
+### Gestión de dependencias
+- available_modules.json: Lista las rutas donde se encuentran los módulos personalizados
+- dependencies.json: Define dependencias del proyecto (obsoleto para paquetes)
+- El sistema permite registrar módulos personalizados y utilizarlos en los DAGs
+
+### Flujo general de trabajo
+1. El usuario crea o carga un DAG a través de la API
+2. El sistema valida el DAG para asegurarse de que cumple con la sintaxis y estructura correcta
+3. Si es válido, se guarda en la carpeta dags/
+4. El usuario puede generar documentación para el DAG
+5. El sistema puede generar diagramas del flujo de trabajo
+6. Los módulos personalizados pueden ser cargados, documentados y utilizados en los DAGs 
