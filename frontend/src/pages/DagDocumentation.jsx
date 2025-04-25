@@ -17,7 +17,7 @@ function DagDocumentation() {
     setDocumentation(null);
     
     try {
-      const response = await fetch(`http://127.0.0.1:8000/get_dag_diagram/${dagName}`);
+      const response = await fetch(`/get_dag_diagram/${dagName}`);
       if (!response.ok) throw new Error('Error al cargar el diagrama');
       const data = await response.json();
       setDiagram(data);
@@ -30,7 +30,7 @@ function DagDocumentation() {
   const handleDocSubmit = async (formData) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://127.0.0.1:8000/generate_dag_doc/${selectedDag}`, {
+      const response = await fetch(`/generate_dag_doc/${selectedDag}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

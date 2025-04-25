@@ -34,7 +34,7 @@ function GeneratorV2() {
   const fetchTemplate = async () => {
     try {
       // Fetch the template from the backend
-      const response = await fetch("http://127.0.0.1:8000/config/template/");
+      const response = await fetch("/config/template/");
       if (!response.ok) {
         throw new Error("Error al cargar el template");
       }
@@ -86,7 +86,7 @@ with DAG(
   // New function to fetch all templates
   const fetchTemplates = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/list_templates/");
+      const response = await fetch("/list_templates/");
       if (!response.ok) {
         throw new Error("Error al cargar las plantillas");
       }
@@ -103,7 +103,7 @@ with DAG(
     if (!templateName) return;
     
     try {
-      const response = await fetch(`http://127.0.0.1:8000/get_template/${templateName}`);
+      const response = await fetch(`/get_template/${templateName}`);
       if (!response.ok) {
         throw new Error(`Error al cargar la plantilla ${templateName}`);
       }
@@ -140,7 +140,7 @@ with DAG(
       const dagBlob = new Blob([dagCode], { type: 'text/x-python' });
       formData.append("file", dagBlob, "temp_analysis.py");
 
-      const response = await fetch("http://127.0.0.1:8000/analyze_dag_dependencies/", {
+      const response = await fetch("/analyze_dag_dependencies/", {
         method: "POST",
         body: formData,
       });
@@ -192,7 +192,7 @@ with DAG(
 
   const handleDagSelect = async (dagName) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/get_dag_content/${dagName}`);
+      const response = await fetch(`/get_dag_content/${dagName}`);
       const data = await response.json();
       setDagCode(data.content);
       setDagName(dagName.replace('.py', ''));
@@ -220,7 +220,7 @@ with DAG(
       formData.append("file", dagBlob, "temp_validation.py");
 
       // URL con parámetro para usar módulos personalizados (mantenemos el nombre del parámetro para compatibilidad)
-      const url = `http://127.0.0.1:8000/validate_dag/?use_custom_dependencies=${useCustomModules}`;
+      const url = `/validate_dag/?use_custom_dependencies=${useCustomModules}`;
 
       const response = await fetch(url, {
         method: "POST",
@@ -265,7 +265,7 @@ with DAG(
       const fileName = `${dagName}.py`;
       formData.append("file", dagBlob, fileName);
 
-      const response = await fetch("http://127.0.0.1:8000/save_dag/", {
+      const response = await fetch("/save_dag/", {
         method: "POST",
         body: formData
       });

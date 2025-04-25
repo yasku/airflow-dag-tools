@@ -127,7 +127,7 @@ function ModuleDocEditor({ moduleName, onSaved = () => {} }) {
     const fetchDocumentation = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://127.0.0.1:8000/module_documentation/${moduleName}`);
+        const response = await fetch(`/module_documentation/${moduleName}`);
         
         if (!response.ok) {
           throw new Error(`Error al cargar la documentación: ${response.statusText}`);
@@ -159,7 +159,7 @@ function ModuleDocEditor({ moduleName, onSaved = () => {} }) {
 
     try {
       setSaving(true);
-      const response = await fetch(`http://127.0.0.1:8000/module_documentation/${moduleName}`, {
+      const response = await fetch(`/module_documentation/${moduleName}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

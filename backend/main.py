@@ -117,13 +117,13 @@ os.makedirs(MODULE_DOCS_DIR, exist_ok=True)  # Crear la carpeta si no existe
 DAG_DOCS_DIR = "dag_docs"
 os.makedirs(DAG_DOCS_DIR, exist_ok=True)  # Crear la carpeta si no existe
 
-@app.get("/")
-def read_root():
-    """
-    Ruta principal de prueba.
-    Retorna un mensaje confirmando que el servidor está corriendo.
-    """
-    return {"message": "API de Validación de DAGs en Airflow"}
+# @app.get("/")
+# def read_root():
+#     """
+#     Ruta principal de prueba.
+#     Retorna un mensaje confirmando que el servidor está corriendo.
+#     """
+#     return {"message": "API de Validación de DAGs en Airflow"}
 
 @app.post("/validate_dag/")
 async def validate_dag_endpoint(
@@ -1126,3 +1126,42 @@ async def list_modules_with_documentation():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al listar módulos con documentación: {str(e)}")
+
+
+# Ruta al directorio de build
+FRONTEND_DIST_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "frontend", "dist"))
+ROUTE_PREFIXES_TO_IGNORE = (
+    "api/",
+    "config/",
+    "validate_dag",
+    "list_dags",
+    "get_dag_content",
+    "save_dag",
+    "delete_dag",
+    "generate_dag_doc",
+    "get_dag_diagram",
+)
+
+# Servir archivos estÃ¡ticos (assets de Vite)
+app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST_PATH, "assets")), name="assets")
+
+# Servir index.html en la raÃ­z
+@app.get("/")
+async def root_router(request: Request):
+    # Si es navegador, servÃ­ el frontend
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept:
+        return FileResponse(os.path.join(FRONTEND_DIST_PATH, "index.html"))
+    # Si es una API (ej: llamada con curl o fetch), respondÃ© JSON
+    return JSONResponse({"message": "API de ValidaciÃ³n de DAGs en Airflow"})
+
+# (opcional) Servir rutas de SPA
+@app.get("/{full_path:path}")
+async def catch_all_routes(request: Request, full_path: str):
+    for prefix in ROUTE_PREFIXES_TO_IGNORE:
+        if full_path.startswith(prefix):
+            return JSONResponse(
+                status_code=404,
+                content={"detail": f"No se encontrÃ³ la ruta: /{full_path}"}
+            )
+    return FileResponse(os.path.join(FRONTEND_DIST_PATH, "index.html"))

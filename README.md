@@ -88,7 +88,7 @@ El backend, desarrollado con FastAPI, tiene las siguientes funciones principales
     uvicorn main:app --reload
     ```
 
-    Esto iniciará el backend en `http://127.0.0.1:8000`.
+    Esto iniciará el backend en ``.
 
 ### **📂 Estructura de Archivos**
 
@@ -131,13 +131,13 @@ Este módulo contiene la lógica para validar los DAGs.
 
 1.  **Probar en el Navegador:**
 
-    Abrir `http://127.0.0.1:8000/docs` para probar la API con Swagger UI.
+    Abrir `/docs` para probar la API con Swagger UI.
 2.  **Subir un DAG y Validarlo:**
 
     Ejemplo de petición con `curl`:
 
     ```bash
-    curl -X 'POST' 'http://127.0.0.1:8000/validate_dag/' \
+    curl -X 'POST' '/validate_dag/' \
      -F 'file=@simple_dag.py'
     ```
 
@@ -315,7 +315,7 @@ El frontend utiliza Tailwind CSS para los estilos. Tailwind CSS es un framework 
       const formData = new FormData();
       formData.append("file", file);
       try {
-        const response = await fetch("http://127.0.0.1:8000/validate_dag/", {
+        const response = await fetch("/validate_dag/", {
           method: "POST",
           body: formData,
         });
@@ -390,7 +390,7 @@ Ejecuta:
 ```bash
 uvicorn main:app --reload
 ```
-Esto iniciará el backend en `http://127.0.0.1:8000`.
+Esto iniciará el backend en ``.
 
 ### **4️⃣ Configuración de CORS**
 El backend está configurado para permitir peticiones desde el frontend mediante CORS (Cross-Origin Resource Sharing):
@@ -459,12 +459,12 @@ def validate_dag(file_path):  # Valida estructura Airflow
 
 ## **📌 Uso de la API**
 ### **1️⃣ Probar en el Navegador**
-Abrir `http://127.0.0.1:8000/docs` para probar la API con Swagger UI.
+Abrir `/docs` para probar la API con Swagger UI.
 
 ### **2️⃣ Subir un DAG y Validarlo**
 Ejemplo de petición con **`curl`**:
 ```bash
-curl -X 'POST' 'http://127.0.0.1:8000/validate_dag/' \
+curl -X 'POST' '/validate_dag/' \
  -F 'file=@simple_dag.py'
 ```
 
@@ -734,7 +734,7 @@ const handleUpload = async () => {
   const formData = new FormData();
   formData.append("file", file);
   try {
-    const response = await fetch("http://127.0.0.1:8000/validate_dag/", {
+    const response = await fetch("/validate_dag/", {
       method: "POST",
       body: formData,
     });
@@ -876,7 +876,7 @@ Antes de comenzar, asegúrate de tener los siguientes requisitos:
     uvicorn main:app --reload
     ```
 
-    Esto iniciará el backend en `http://127.0.0.1:8000`.
+    Esto iniciará el backend en ``.
 
 ---
 

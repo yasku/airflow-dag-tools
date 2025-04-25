@@ -7,7 +7,7 @@ const ModuleList = forwardRef(({ onModuleSelect, selectedModule }, ref) => {
 
   const fetchModules = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/list_custom_modules/');
+      const response = await fetch('/list_custom_modules/');
       const data = await response.json();
       
       // La API de módulos personalizados devuelve un array de objetos,

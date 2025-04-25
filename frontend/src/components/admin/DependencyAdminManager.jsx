@@ -22,7 +22,7 @@ function DependencyAdminManager({ simplifiedMode = true }) {
     try {
       setIsLoading(true);
       // Mantenemos la URL original para compatibilidad
-      const response = await fetch('http://127.0.0.1:8000/dependencies/');
+      const response = await fetch('/dependencies/');
       if (!response.ok) {
         throw new Error('Error al cargar módulos disponibles');
       }
@@ -44,7 +44,7 @@ function DependencyAdminManager({ simplifiedMode = true }) {
   // Nueva función para cargar los módulos que tienen documentación
   const fetchModulesWithDocs = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/modules_with_documentation/');
+      const response = await fetch('/modules_with_documentation/');
       if (!response.ok) {
         throw new Error('Error al cargar módulos con documentación');
       }
@@ -70,7 +70,7 @@ function DependencyAdminManager({ simplifiedMode = true }) {
       };
       
       // Usamos el endpoint correcto
-      const response = await fetch('http://127.0.0.1:8000/available_modules/', {
+      const response = await fetch('/available_modules/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

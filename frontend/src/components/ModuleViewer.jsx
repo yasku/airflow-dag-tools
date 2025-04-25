@@ -19,7 +19,7 @@ function ModuleViewer({ moduleName }) {
         setLoading(true);
         setError(null);
         
-        const response = await fetch(`http://127.0.0.1:8000/get_custom_module/${moduleName}`);
+        const response = await fetch(`/get_custom_module/${moduleName}`);
         
         if (!response.ok) {
           throw new Error(`Error al cargar el módulo: ${response.statusText}`);

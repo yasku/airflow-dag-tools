@@ -49,7 +49,7 @@ function DependencyManager({
     try {
       setLoadingDependencies(true);
       // Mantenemos el endpoint original para compatibilidad
-      const response = await fetch("http://127.0.0.1:8000/dependencies/");
+      const response = await fetch("/dependencies/");
       if (!response.ok) {
         throw new Error("Error al cargar los módulos disponibles");
       }
@@ -131,7 +131,7 @@ function DependencyManager({
 
     try {
       setLoadingDependencies(true);
-      const response = await fetch("http://127.0.0.1:8000/dependencies/module_path/", {
+      const response = await fetch("/dependencies/module_path/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -220,7 +220,7 @@ function DependencyManager({
 
     try {
       setLoadingDependencies(true);
-      const response = await fetch(`http://127.0.0.1:8000/dependencies/module_path/${encodeURIComponent(value)}`, {
+      const response = await fetch(`/dependencies/module_path/${encodeURIComponent(value)}`, {
         method: "DELETE",
       });
 
@@ -253,7 +253,7 @@ function DependencyManager({
       const dagBlob = new Blob([dagCode], { type: 'text/x-python' });
       formData.append("file", dagBlob, "temp_analysis.py");
 
-      const response = await fetch("http://127.0.0.1:8000/analyze_dag_dependencies/", {
+      const response = await fetch("/analyze_dag_dependencies/", {
         method: "POST",
         body: formData,
       });
@@ -282,7 +282,7 @@ function DependencyManager({
   const fetchCustomModules = async () => {
     try {
       setLoadingModules(true);
-      const response = await fetch("http://127.0.0.1:8000/list_custom_modules/");
+      const response = await fetch("/list_custom_modules/");
       if (!response.ok) {
         throw new Error("Error al cargar los módulos personalizados");
       }
@@ -314,7 +314,7 @@ function DependencyManager({
       const formData = new FormData();
       formData.append("file", moduleFile);
 
-      const response = await fetch("http://127.0.0.1:8000/upload_custom_module/", {
+      const response = await fetch("/upload_custom_module/", {
         method: "POST",
         body: formData,
       });
@@ -346,7 +346,7 @@ function DependencyManager({
   const handleDeleteModule = async (moduleName) => {
     try {
       setLoadingModules(true);
-      const response = await fetch(`http://127.0.0.1:8000/delete_custom_module/${encodeURIComponent(moduleName)}`, {
+      const response = await fetch(`/delete_custom_module/${encodeURIComponent(moduleName)}`, {
         method: "DELETE",
       });
 
@@ -370,7 +370,7 @@ function DependencyManager({
   const fetchModulesWithDocs = async () => {
     try {
       setLoadingModulesDocs(true);
-      const response = await fetch("http://127.0.0.1:8000/modules_with_documentation/");
+      const response = await fetch("/modules_with_documentation/");
       if (!response.ok) {
         throw new Error("Error al cargar los módulos con documentación");
       }

@@ -131,7 +131,7 @@ const markdownStyles = `
 `;
 
 // URL base para las solicitudes API - extraída para su fácil modificación
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = '';
 
 // Componente de Spinner para el estado de carga
 const LoadingSpinner = () => (

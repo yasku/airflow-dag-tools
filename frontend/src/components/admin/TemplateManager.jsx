@@ -55,7 +55,7 @@ with DAG(
   const fetchTemplates = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://127.0.0.1:8000/list_templates/');
+      const response = await fetch('/list_templates/');
       if (!response.ok) {
         throw new Error('Error al obtener templates');
       }
@@ -83,7 +83,7 @@ with DAG(
   // Get a specific template content
   const handleTemplateSelect = async (templateName) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/get_template/${templateName}`);
+      const response = await fetch(`/get_template/${templateName}`);
       if (!response.ok) {
         throw new Error(`Error al cargar el template ${templateName}`);
       }
@@ -109,7 +109,7 @@ with DAG(
       const templateBlob = new Blob([templateContent], { type: 'text/x-python' });
       formData.append("file", templateBlob, "temp_validation.py");
 
-      const response = await fetch("http://127.0.0.1:8000/validate_dag/", {
+      const response = await fetch("/validate_dag/", {
         method: "POST",
         body: formData,
       });
@@ -164,7 +164,7 @@ with DAG(
         return;
       }
       
-      const response = await fetch('http://127.0.0.1:8000/save_template/', {
+      const response = await fetch('/save_template/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -203,7 +203,7 @@ with DAG(
         return;
       }
       
-      const response = await fetch('http://127.0.0.1:8000/save_template/', {
+      const response = await fetch('/save_template/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -237,7 +237,7 @@ with DAG(
   // Delete a template
   const handleDeleteTemplate = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/delete_template/${selectedTemplate}`, {
+      const response = await fetch(`/delete_template/${selectedTemplate}`, {
         method: 'DELETE'
       });
       
@@ -282,7 +282,7 @@ with DAG(
       const formData = new FormData();
       formData.append('file', dagBlob, fileName);
       
-      fetch('http://127.0.0.1:8000/save_dag/', {
+      fetch('/save_dag/', {
         method: 'POST',
         body: formData
       })

@@ -29,7 +29,7 @@ function ValidationV2() {
 
   const handleDagSelect = async (dagName) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/get_dag_content/${dagName}`);
+      const response = await fetch(`/get_dag_content/${dagName}`);
       const data = await response.json();
       setDagCode(data.content);
       setSelectedDagName(dagName);
@@ -57,7 +57,7 @@ function ValidationV2() {
     }
 
     // Mantenemos el nombre del parámetro para compatibilidad con el backend
-    const url = `http://127.0.0.1:8000/validate_dag/?use_custom_dependencies=${useCustomModules}`;
+    const url = `/validate_dag/?use_custom_dependencies=${useCustomModules}`;
 
     try {
       const response = await fetch(url, {

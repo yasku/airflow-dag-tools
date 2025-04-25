@@ -31,7 +31,7 @@ function Validate() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("http://127.0.0.1:8000/validate_dag/", {
+      const response = await fetch("/validate_dag/", {
         method: "POST",
         body: formData,
       });
